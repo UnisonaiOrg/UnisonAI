@@ -1,6 +1,6 @@
 <div align="center">
 
-![Logo of UnisonAI](.\assets\UnisonAI_Banner.jpg)
+![Logo of UnisonAI](assets\UnisonAI_Banner.jpg)
 
 
 </div>
