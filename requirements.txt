@@ -1,0 +1,12 @@
+cohere
+groq
+rich
+python-dotenv
+google-generativeai
+requests
+colorama
+anthropic
+openai>=1.13.3
+googlesearch-python
+mistralai
+pydantic>=2.4.2
