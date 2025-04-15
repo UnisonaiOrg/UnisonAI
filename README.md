@@ -256,4 +256,6 @@ A: The framework is ideal for building chatbots, planning tools, automation work
 
 ## Contributing and License
 
+Founder - [@E5Anant](https://github.com/E5Anant)
+
 Feel free to open issues, submit pull requests, or suggest improvements on the GitHub repository. The project is licensed under the MIT License.
