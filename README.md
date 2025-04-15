@@ -2,9 +2,13 @@
 
 ![Logo of UnisonAI](https://github.com/UnisonAI/UnisonAI/blob/main/assets/UnisonAI_Banner.jpg)
 
+[![License: MIT](https://img.shields.io/github/license/UnisonAI/UnisonAI?style=for-the-badge)](https://github.com/UnisonAI/UnisonAI/blob/main/LICENSE)
+[![GitHub Repo stars](https://img.shields.io/github/stars/UnisonAI/UnisonAI?style=for-the-badge)](https://github.com/UnisonAI/UnisonAI/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/UnisonAI/UnisonAI?style=for-the-badge)](https://github.com/UnisonAI/UnisonAI/network/members)
+[![GitHub issues](https://img.shields.io/github/issues/UnisonAI/UnisonAI?style=for-the-badge)](https://github.com/UnisonAI/UnisonAI/issues)
+[![GitHub last commit](https://img.shields.io/github/last-commit/UnisonAI/UnisonAI?style=for-the-badge)](https://github.com/UnisonAI/UnisonAI/commits/main)
 
 </div>
-
 The UnisonAI Multi-Agent Framework provides a flexible and extensible environment for creating and coordinating multiple AI agents.
 
 ## Table of Contents
