@@ -216,13 +216,14 @@ pip3 install unisonai
 | `description`     | Parameter purpose                   | **Required**|
 | `default_value`   | Default value                       | None      |
 | `required`        | Is parameter mandatory?             | True      |
-| `format()`        | Formatted string representation     | N/A       |
 
 ---
 
 ## 💡 Usage Examples
 
 ### 🚦 Standalone Agent
+
+This is the code from [`main.py`](https://github.com/UnisonAI/UnisonAI/blob/main/main.py) FILE.
 
 ```python
 from unisonai import Single_Agent
@@ -244,6 +245,8 @@ web_agent.unleash(task="Find out what is the age of Trump")
 ---
 
 ### 🤖 Clan-Based Agents
+
+This is a refernce from [`main2.py`](https://github.com/UnisonAI/UnisonAI/blob/main/main2.py) FILE, check the file for the full complex example.
 
 ```python
 from unisonai import Agent, Clan
