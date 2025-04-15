@@ -172,7 +172,7 @@ Tools are extensions that agents can call to perform specific tasks. They are bu
 
 ### Standalone Agent (Single_Agent)
 
-In `main.py`, a standalone agent is created to perform a web search task:
+In [`main.py`](https://github.com/UnisonAI/UnisonAI/blob/main/main.py), a standalone agent is created to perform a web search task:
 
 ```python
 from unisonai import Single_Agent
@@ -193,7 +193,7 @@ web_agent.unleash(task="Find out what is the age of Trump")
 
 ### Clan-Based Agents
 
-In `main2.py`, multiple agents are created for a collaborative task (planning a trip) and are managed by a clan:
+In [`main2.py`](https://github.com/UnisonAI/UnisonAI/blob/main/main2.py), multiple agents are created for a collaborative task (planning a trip) and are managed by a clan:
 
 ```python
 from unisonai import Agent, Clan
