@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://github.com/UnisonAIInc/UnisonAI/blob/main/assets/UnisonAI_Banner.jpg" alt="UnisonAI Banner" width="90%"/>
+<img src="https://github.com/UnisonAIInc/UnisonAI/blob/main/assets/UnisonAI_Banner.jpg" alt="UnisonAI Banner" width="100%"/>
 
 <h1><b>UnisonAI: The Multi-Agent Framework for Modern AI Collaboration</b></h1>
 <p>
