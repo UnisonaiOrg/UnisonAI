@@ -9,7 +9,7 @@
 
 <p>
   <a href="https://github.com/UnisonAI/UnisonAI/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/UnisonAI/UnisonAI?style=for-the-badge" alt="License: MIT"/>
+    <img src="https://img.shields.io/github/license/UnisonAI/UnisonAI?style=for-the-badge" alt="License: Apache 2.0"/>
   </a>
   <a href="https://github.com/UnisonAI/UnisonAI/stargazers">
     <img src="https://img.shields.io/github/stars/UnisonAI/UnisonAI?style=for-the-badge" alt="GitHub Repo stars"/>
