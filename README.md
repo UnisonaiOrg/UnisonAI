@@ -71,6 +71,8 @@ UnisonAI is a flexible and extensible Python framework for building, coordinatin
 
 Supports Cohere, Mixtral, Groq, Gemini, Grok, OpenAI, Anthropic, and any custom model (just extend `BaseLLM`). UnisonAI is designed for real-world, production-grade multi-agent AI applications.
 
+### Uses A2A (Agent to Agent) Communication!
+
 ---
 
 ## 🎯 Why UnisonAI?
@@ -81,7 +83,7 @@ Supports Cohere, Mixtral, Groq, Gemini, Grok, OpenAI, Anthropic, and any custom 
   <tr>
     <td>🔗 <b>Multi-LLM Support</b><br>Mix and match LLM providers with ease.</td>
     <td>🧩 <b>Modular & Extensible</b><br>Add your own tools, LLMs, and logic.</td>
-    <td>🤖 <b>Single or Multi-Agent</b><br>Solo agents or collaborative Clans—your call.</td>
+    <td>🤖 <b>Single or Multi-Agent</b><br>Solo agents or collaborative Clans—your call. With Agent to Agent communication on your supervision</td>
   </tr>
   <tr>
     <td>🛡️ <b>Robust Error Handling</b><br>Built-in JSON/YAML repair & retries.</td>
@@ -288,7 +290,7 @@ clan.unleash()
 
 <details>
   <summary><b>What is UnisonAI?</b></summary>
-  <p>A Python framework for orchestrating multiple AI agents—each powered by your choice of LLMs, working solo or in teams.</p>
+  <p>A Python framework for orchestrating multiple AI agents—each powered by your choice of LLMs, working solo or in teams. Specifically with A2A communication.</p>
 </details>
 
 <details>
@@ -323,7 +325,7 @@ clan.unleash()
 <div align="center">
 
 <b>Founder:</b> <a href="https://github.com/E5Anant">@E5Anant</a> <br/>
-PRs and issues welcome! The project is under the MIT License.
+PRs and issues welcome! The project is under the Apache 2.0 License.
 
 <a href="https://github.com/UnisonAIInc/UnisonAI/issues">Open issues</a> •
 <a href="https://github.com/UnisonAIInc/UnisonAI/pulls">Submit PRs</a> •
