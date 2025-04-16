@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://github.com/UnisonAI/UnisonAI/blob/main/assets/UnisonAI_Banner.jpg" alt="UnisonAI Banner" width="90%"/>
+<img src="https://github.com/UnisonAIInc/UnisonAI/blob/main/assets/UnisonAI_Banner.jpg" alt="UnisonAI Banner" width="90%"/>
 
 <h1><b>UnisonAI: The Multi-Agent Framework for Modern AI Collaboration</b></h1>
 <p>
@@ -8,20 +8,20 @@
 </p>
 
 <p>
-  <a href="https://github.com/UnisonAI/UnisonAI/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/UnisonAI/UnisonAI?style=for-the-badge" alt="License: Apache 2.0"/>
+  <a href="https://github.com/UnisonAIInc/UnisonAI/blob/main/LICENSE">
+  <img src="https://img.shields.io/github/license/UnisonAIInc/UnisonAI?style=for-the-badge" alt="License: Apache 2.0"/>
+</a>
+  <a href="https://github.com/UnisonAIInc/UnisonAI/stargazers">
+    <img src="https://img.shields.io/github/stars/UnisonAIInc/UnisonAI?style=for-the-badge" alt="GitHub Repo stars"/>
   </a>
-  <a href="https://github.com/UnisonAI/UnisonAI/stargazers">
-    <img src="https://img.shields.io/github/stars/UnisonAI/UnisonAI?style=for-the-badge" alt="GitHub Repo stars"/>
+  <a href="https://github.com/UnisonAIInc/UnisonAI/network/members">
+    <img src="https://img.shields.io/github/forks/UnisonAIInc/UnisonAI?style=for-the-badge" alt="GitHub forks"/>
   </a>
-  <a href="https://github.com/UnisonAI/UnisonAI/network/members">
-    <img src="https://img.shields.io/github/forks/UnisonAI/UnisonAI?style=for-the-badge" alt="GitHub forks"/>
+  <a href="https://github.com/UnisonAIInc/UnisonAI/issues">
+    <img src="https://img.shields.io/github/issues/UnisonAIInc/UnisonAI?style=for-the-badge" alt="GitHub issues"/>
   </a>
-  <a href="https://github.com/UnisonAI/UnisonAI/issues">
-    <img src="https://img.shields.io/github/issues/UnisonAI/UnisonAI?style=for-the-badge" alt="GitHub issues"/>
-  </a>
-  <a href="https://github.com/UnisonAI/UnisonAI/commits/main">
-    <img src="https://img.shields.io/github/last-commit/UnisonAI/UnisonAI?style=for-the-badge" alt="GitHub last commit"/>
+  <a href="https://github.com/UnisonAIInc/UnisonAI/commits/main">
+    <img src="https://img.shields.io/github/last-commit/UnisonAIInc/UnisonAI?style=for-the-badge" alt="GitHub last commit"/>
   </a>
 </p>
 
@@ -223,7 +223,7 @@ pip3 install unisonai
 
 ### 🚦 Standalone Agent
 
-This is the code from [`main.py`](https://github.com/UnisonAI/UnisonAI/blob/main/main.py) FILE.
+This is the code from [`main.py`](https://github.com/UnisonAIInc/UnisonAI/blob/main/main.py) FILE.
 
 ```python
 from unisonai import Single_Agent
@@ -246,7 +246,7 @@ web_agent.unleash(task="Find out what is the age of Trump")
 
 ### 🤖 Clan-Based Agents
 
-This is a refernce from [`main2.py`](https://github.com/UnisonAI/UnisonAI/blob/main/main2.py) FILE, check the file for the full complex example.
+This is a refernce from [`main2.py`](https://github.com/UnisonAIInc/UnisonAI/blob/main/main2.py) FILE, check the file for the full complex example.
 
 ```python
 from unisonai import Agent, Clan
@@ -325,14 +325,14 @@ clan.unleash()
 <b>Founder:</b> <a href="https://github.com/E5Anant">@E5Anant</a> <br/>
 PRs and issues welcome! The project is under the MIT License.
 
-<a href="https://github.com/UnisonAI/UnisonAI/issues">Open issues</a> •
-<a href="https://github.com/UnisonAI/UnisonAI/pulls">Submit PRs</a> •
-<a href="https://github.com/UnisonAI/UnisonAI">Suggest improvements</a>
+<a href="https://github.com/UnisonAIInc/UnisonAI/issues">Open issues</a> •
+<a href="https://github.com/UnisonAIInc/UnisonAI/pulls">Submit PRs</a> •
+<a href="https://github.com/UnisonAIInc/UnisonAI">Suggest improvements</a>
 
 <br/><br/>
 
-<a href="https://github.com/UnisonAI/UnisonAI/blob/main/LICENSE">
-  <img src="https://img.shields.io/badge/License-MIT-green.svg?style=flat-square" alt="License: MIT"/>
+<a href="https://github.com/UnisonAIInc/UnisonAI/blob/main/LICENSE">
+  <img src="https://img.shields.io/github/license/UnisonAIInc/UnisonAI?style=for-the-badge" alt="License: Apache 2.0"/>
 </a>
 
 </div>
