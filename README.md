@@ -73,6 +73,10 @@ Supports Cohere, Mixtral, Groq, Gemini, Grok, OpenAI, Anthropic, and any custom 
 
 ### Uses A2A (Agent to Agent) Communication!
 
+<div><div></div></div>
+<img src="https://github.com/UnisonAIInc/UnisonAI/blob/main/assets/Example.jpg" alt="Example" width="60%"/>
+
+
 ---
 
 ## 🎯 Why UnisonAI?
