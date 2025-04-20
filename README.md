@@ -8,17 +8,8 @@
 </p>
 
 <p>
-  <a href="https://github.com/UnisonAIInc/UnisonAI/blob/main/LICENSE">
-  <img src="https://img.shields.io/github/license/UnisonAIInc/UnisonAI?style=for-the-badge" alt="License: Apache 2.0"/>
-</a>
   <a href="https://github.com/UnisonAIInc/UnisonAI/stargazers">
     <img src="https://img.shields.io/github/stars/UnisonAIInc/UnisonAI?style=for-the-badge" alt="GitHub Repo stars"/>
-  </a>
-  <a href="https://github.com/UnisonAIInc/UnisonAI/network/members">
-    <img src="https://img.shields.io/github/forks/UnisonAIInc/UnisonAI?style=for-the-badge" alt="GitHub forks"/>
-  </a>
-  <a href="https://github.com/UnisonAIInc/UnisonAI/issues">
-    <img src="https://img.shields.io/github/issues/UnisonAIInc/UnisonAI?style=for-the-badge" alt="GitHub issues"/>
   </a>
   <a href="https://github.com/UnisonAIInc/UnisonAI/commits/main">
     <img src="https://img.shields.io/github/last-commit/UnisonAIInc/UnisonAI?style=for-the-badge" alt="GitHub last commit"/>
