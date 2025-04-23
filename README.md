@@ -2,18 +2,8 @@
 
 <img src="https://github.com/UnisonAIInc/UnisonAI/blob/main/assets/UnisonAI_Banner.jpg" alt="UnisonAI Banner" width="100%"/>
 
-<h1><b>UnisonAI: The Multi-Agent Framework for Modern AI Collaboration</b></h1>
 <p>
   <i>Build, orchestrate, and scale intelligent agents—solo or in teams—using your favorite LLMs.</i>
-</p>
-
-<p>
-  <a href="https://github.com/UnisonAIInc/UnisonAI/stargazers">
-    <img src="https://img.shields.io/github/stars/UnisonAIInc/UnisonAI?style=for-the-badge" alt="GitHub Repo stars"/>
-  </a>
-  <a href="https://github.com/UnisonAIInc/UnisonAI/commits/main">
-    <img src="https://img.shields.io/github/last-commit/UnisonAIInc/UnisonAI?style=for-the-badge" alt="GitHub last commit"/>
-  </a>
 </p>
 
 </div>
@@ -327,6 +317,15 @@ PRs and issues welcome! The project is under the Apache 2.0 License.
 <a href="https://github.com/UnisonAIInc/UnisonAI">Suggest improvements</a>
 
 <br/><br/>
+
+<p>
+  <a href="https://github.com/UnisonAIInc/UnisonAI/stargazers">
+    <img src="https://img.shields.io/github/stars/UnisonAIInc/UnisonAI?style=for-the-badge" alt="GitHub Repo stars"/>
+  </a>
+  <a href="https://github.com/UnisonAIInc/UnisonAI/commits/main">
+    <img src="https://img.shields.io/github/last-commit/UnisonAIInc/UnisonAI?style=for-the-badge" alt="GitHub last commit"/>
+  </a>
+</p>
 
 <a href="https://github.com/UnisonAIInc/UnisonAI/blob/main/LICENSE">
   <img src="https://img.shields.io/github/license/UnisonAIInc/UnisonAI?style=for-the-badge" alt="License: Apache 2.0"/>
