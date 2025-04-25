@@ -2,31 +2,27 @@
 
 <img src="https://github.com/UnisonAIInc/UnisonAI/blob/main/assets/UnisonAI_Banner.jpg" alt="UnisonAI Banner" width="100%"/>
 
-<p>
-  <i>Build, orchestrate, and scale intelligent agents—solo or in teams—using your favorite LLMs.</i>
-</p>
-
 </div>
 
+UnisonAI is a flexible and extensible Python framework built on agent to agent (a2a) for building, coordinating, 
+and scaling multiple AI agents—each powered by the LLM of your choice,
+unisonai helps in making individual agents on focused tasks as well as clan-based agent for extensive and complex tasks.
 
-<div align="center">
+[![GitHub Repo stars](https://img.shields.io/github/stars/UnisonAIInc/UnisonAI)](https://github.com/UnisonAIInc/UnisonAI)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-green.svg)](https://opensource.org/licenses/apache-2-0)
 
-<b>Compose teams of LLM-powered agents, extend with custom tools, and unlock collaborative AI automation.</b>
-</div>
+# Table of Content:
+- [Overview](#overview)
+- [Why UnisonAI?](#why-unisonai)
+- [Installation](#installation)
+- [Core Components](#core-components)
+- [Parameter Reference Tables](#parameter-reference-tables)
+- [Usage Examples](#usage-examples)
+- [Faq?](#faq)
+- [Contributing And License](#contributing-and-license)
 
-<br/>
 
-### Table of Content:
-<div><a href="#-overview">Overview</a></div>
-<div><a href="#-why-unisonai">Why UnisonAI?</a></div>
-<div><a href="#️-installation">Installation</a></div>
-<div><a href="#-core-components">Core Components</a></div>
-<div><a href="#-parameter-reference-tables">Parameter Reference Tables</a></div>
-<div><a href="#-usage-examples">Usage Examples</a></div>
-<div><a href="#-faq">FAQ</a></div>
-<div><a href="#-contributing-and-license">Contributing and License</a></div>
-
-## 🚀 Overview
+## Overview
 
 UnisonAI is a flexible and extensible Python framework for building, coordinating, and scaling multiple AI agents—each powered by the LLM of your choice.
 
@@ -36,7 +32,9 @@ UnisonAI is a flexible and extensible Python framework for building, coordinatin
 
 Supports Cohere, Mixtral, Groq, Gemini, Grok, OpenAI, Anthropic, and any custom model (just extend `BaseLLM`). UnisonAI is designed for real-world, production-grade multi-agent AI applications.
 
-### Uses A2A (Agent to Agent) Communication!
+---
+
+## Uses A2A (Agent to Agent) Communication!
 <img src="https://github.com/UnisonAIInc/UnisonAI/blob/main/assets/Example.jpg" alt="Example" width="80%"/>
 
 <div><div></div></div>
@@ -44,7 +42,7 @@ Supports Cohere, Mixtral, Groq, Gemini, Grok, OpenAI, Anthropic, and any custom 
 
 ---
 
-## 🎯 Why UnisonAI?
+## Why UnisonAI?
 
 <div align="center">
 
@@ -71,7 +69,7 @@ Supports Cohere, Mixtral, Groq, Gemini, Grok, OpenAI, Anthropic, and any custom 
 
 ---
 
-## 🛠️ Installation
+## Installation
 
 > **Requires Python >=3.10, <3.13**
 
@@ -83,7 +81,7 @@ pip3 install unisonai
 
 ---
 
-## 🧩 Core Components
+## Core Components
 
 <div align="center">
 
@@ -138,7 +136,7 @@ pip3 install unisonai
 
 ---
 
-## 📊 Parameter Reference Tables
+## Parameter Reference Tables
 
 ### Single_Agent
 
@@ -197,9 +195,9 @@ pip3 install unisonai
 
 ---
 
-## 💡 Usage Examples
+## Usage Examples
 
-### 🚦 Standalone Agent
+### Standalone Agent
 
 This is the code from [`main.py`](https://github.com/UnisonAIInc/UnisonAI/blob/main/main.py) FILE.
 
@@ -222,7 +220,7 @@ web_agent.unleash(task="Find out what is the age of Trump")
 
 ---
 
-### 🤖 Clan-Based Agents
+### Clan-Based Agents
 
 **"This is a refernce from [`main2.py`](https://github.com/UnisonAIInc/UnisonAI/blob/main/main2.py) FILE, check the file for the full complex example."**
 
@@ -262,7 +260,7 @@ clan.unleash()
 
 ---
 
-## ❓ FAQ
+## FAQ?
 
 <details>
   <summary><b>What is UnisonAI?</b></summary>
@@ -296,7 +294,7 @@ clan.unleash()
 
 ---
 
-## 🤝 Contributing and License
+## Contributing and License
 
 <div align="center">
 
