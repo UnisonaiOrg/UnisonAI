@@ -1,0 +1,62 @@
+[
+    {
+        "role": "user",
+        "parts": [
+            "Find out what is the age of trump"
+        ]
+    },
+    {
+        "role": "model",
+        "parts": [
+            "```yml\nthoughts: >\n  I need to find out the age of Donald Trump. I can use a web search to find his birthdate and then calculate his age.\nname: web_search\nparams: >\n  {\"query\": \"Donald Trump birthdate\"}\n```\n"
+        ]
+    },
+    {
+        "role": "user",
+        "parts": [
+            "Here is your tool response:\n\n1. \nTitle: \nDescription:  Donald John Trump is an American politician, media personality, and businessman who is the 47th president of the United States. A member of the Republican Party, he served as the 45th president from 2017 to 2021.   Wikipedia \nSource: /imgres?imgurl=https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/TrumpPortrait.jpg/960px-TrumpPortrait.jpg\n\n2. \nTitle: Donald Trump - Wikipedia\nDescription:  Donald John Trump (born June 14, 1946) is an American politician, media personality, and businessman who is the 47th president of the United States. \nSource: https://en.wikipedia.org/wiki/Donald_Trump\n\n3. \nTitle: Donald Trump | Biography, Education, Business Career ... - Britannica\nDescription:  Donald Trump (born June 14, 1946, New York, New York, U.S.) is the 45th and 47th president of the United States (2017\u201321; 2025\u2013 ). \nSource: https://www.britannica.com/biography/Donald-Trump\n\n"
+        ]
+    },
+    {
+        "role": "model",
+        "parts": [
+            "```yml\nthoughts: >\n  The search results indicate that Donald Trump was born on June 14, 1946. To calculate his age, I need to know the current date. I will ask the user for the current date.\nname: ask_user\nparams: >\n  {\"question\": \"What is the current date (in MM/DD/YYYY format)?\"}\n```\n"
+        ]
+    },
+    {
+        "role": "user",
+        "parts": [
+            "26/05/2025"
+        ]
+    },
+    {
+        "role": "model",
+        "parts": [
+            "```yml\nthoughts: >\n  Donald Trump was born on June 14, 1946. The current date is May 26, 2025. I can now calculate his age. 2025 - 1946 = 79. Since his birthday in 2025 has not yet passed, he is still 78 years old.\nname: pass_result\nparams: >\n  {\"result\": \"Donald Trump is currently 78 years old.\"}\n```"
+        ]
+    },
+    {
+        "role": "user",
+        "parts": [
+            "Find out what is the current price of apple stocks"
+        ]
+    },
+    {
+        "role": "model",
+        "parts": [
+            "```yml\nthoughts: >\n  I need to find the current price of Apple stocks. I can use a web search to find this information.\nname: web_search\nparams: >\n  {\"query\": \"current price of Apple stock\"}\n```"
+        ]
+    },
+    {
+        "role": "user",
+        "parts": [
+            "Here is your tool response:\n\n1. \nTitle: Stock Price - Apple Investor Relations\nDescription:  Stock Quote: NASDAQ: AAPL ; Day's Open193.66 ; Closing Price195.27 ; Volume78.4 ; Intraday High197.70 ; Intraday Low193.46. \nSource: https://investor.apple.com/stock-price/default.aspx\n\n2. \nTitle: Apple Inc Share Price, AAPL Stock Price Quote Today - Groww\nDescription:  The current Apple Inc share price is $195.27 as of 24 May '25. What is the Market Cap of Apple Inc? The Apple Inc market cap is $2.91T as of 24 May '25. What\u00a0... \nSource: https://groww.in/us-stocks/aapl\n\n3. \nTitle:   China, Hong Kong stocks weaken as auto shares, Apple suppliers weigh  \nDescription:  China, Hong Kong stocks weaken as auto shares, Apple suppliers weigh \nSource: https://www.livemint.com/market/stock-market-news/china-hong-kong-stocks-weaken-as-auto-shares-apple-suppliers-weigh-11748234032128.html\n\n"
+        ]
+    },
+    {
+        "role": "model",
+        "parts": [
+            "```yml\nthoughts: >\n  The search results indicate that the current Apple Inc. share price is $195.27 as of May 24, 2025.\nname: pass_result\nparams: >\n  {\"result\": \"The current Apple Inc. share price is $195.27 as of May 24, 2025.\"}\n```"
+        ]
+    }
+]
