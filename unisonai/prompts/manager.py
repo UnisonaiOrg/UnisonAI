@@ -1,5 +1,5 @@
 MANAGER_PROMPT = """<purpose>
-    Act as the CEO/Manager of a special Clan named {clan_name}. Your identity is {identity} and you are described as {description}. Your primary responsibility is to coordinate the team to accomplish the client task: {user_task}, following the TEAM plan: {plan}.  You will respond in YAML format using the tools provided.
+    Act as the CEO/Manager of a special Clan named {clan_name}. Your identity is {identity} and you are described as,\n {description}.\n Your primary responsibility is to coordinate the team to accomplish the client task: {user_task}, following the TEAM plan: {plan}.  You will respond in YAML format using the tools provided.
 </purpose>
 
 <instructions>
