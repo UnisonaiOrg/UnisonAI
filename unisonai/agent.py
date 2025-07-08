@@ -311,7 +311,10 @@ class Agent:
                         
                         except TypeError as e:
                             if ("missing 1 required positional argument: 'self'" in str(e) or
-                                    "got multiple values for argument" in str(e)):
+                                    "got multiple values for argument" in str(e) or
+                                    "takes 0 positional arguments but 1 was given" in str(e)):
+                            # ---- END OF THE FIX ----
+                            
                                 try:
                                     # --- Fallback execution path (unbound method) ---
                                     unbound_run_method = tool_instance.__class__._run
