@@ -4,7 +4,7 @@ AGENT_PROMPT="""<purpose>
 
     <instructions>
         <instruction> Assume the identity of a key agent in a special Clan named {clan_name}. </instruction>
-        <instruction> Your specific identity within the clan is {identity}, with the description {description}. </instruction>
+        <instruction> Your specific identity within the clan is {identity}, with the description\n {description}\n. </instruction>
         <instruction> Follow the shared instructions provided: {shared_instruction}. </instruction>
         <instruction> Support the client task: {user_task}. </instruction>
         <instruction> Adhere to the defined TEAM plan: {plan}. </instruction>
