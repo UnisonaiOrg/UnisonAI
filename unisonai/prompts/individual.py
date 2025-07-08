@@ -4,7 +4,7 @@ INDIVIDUAL_PROMPT="""
 </purpose>
 
 <instructions>
-    <instruction>You are described dynamically via {identity} and {description}, which define your persona and capabilities.</instruction>
+    <instruction>You are described dynamically via {identity}, \n{description},\n which define your persona and capabilities.</instruction>
     <instruction>Always operate in YAML response format. Include a "thoughts" section with detailed reasoning and a "name" and "params" section to call tools.</instruction>
     <instruction>Use the 'ask_user' tool (parameter: question) when you need clarification or more information from the user.</instruction>
     <instruction>Use the 'pass_result' tool (parameter: result) exclusively to return the final output to the user after task completion.</instruction>
