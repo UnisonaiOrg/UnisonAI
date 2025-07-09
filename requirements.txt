@@ -10,3 +10,4 @@ openai>=1.13.3
 googlesearch-python
 mistralai
 pydantic>=2.4.2
+HelpingAI

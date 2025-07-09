@@ -25,7 +25,9 @@ def create_tools(tools: list):
             formatted_tools += "  PARAMS: "
             fields = tool_instance.params
             for field in fields:
-                formatted_tools += field.format()
+                # Escape curly braces to prevent format string conflicts
+                field_format = field.format().replace("{", "{{").replace("}", "}}")
+                formatted_tools += field_format
     else:
         formatted_tools = None
 
@@ -75,12 +77,14 @@ class Single_Agent:
         """Ensures params is a dictionary by parsing it if it's a string."""
         if isinstance(params_data, str):
             params_data = params_data.strip()
+            # Try to clean up escaped quotes first
+            cleaned_params = params_data.replace('\\"', '"')
             try:
-                return json.loads(params_data)
+                return json.loads(cleaned_params)
             except json.JSONDecodeError as e:
                 print(f"{Fore.YELLOW}JSON parsing error: {e}")
                 try:
-                    parsed = yaml.safe_load(params_data)
+                    parsed = yaml.safe_load(cleaned_params)
                     if isinstance(parsed, dict):
                         return parsed
                     else:

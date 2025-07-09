@@ -33,7 +33,7 @@ UnisonAI is a flexible and extensible Python framework for building, coordinatin
 - **Agent (as part of a Clan):** For teamwork, coordination, and distributed problem-solving.
 - **Tool System:** Easily augment agents with custom, pluggable tools (web search, time, APIs, your own logic).
 
-Supports Cohere, Mixtral, Groq, Gemini, Grok, OpenAI, Anthropic, and any custom model (just extend `BaseLLM`). UnisonAI is designed for real-world, production-grade multi-agent AI applications.
+Supports Cohere, Mixtral, Groq, Gemini, Grok, OpenAI, Anthropic, HelpingAI, and any custom model (just extend `BaseLLM`). UnisonAI is designed for real-world, production-grade multi-agent AI applications.
 
 ---
 
@@ -66,7 +66,7 @@ Supports Cohere, Mixtral, Groq, Gemini, Grok, OpenAI, Anthropic, and any custom 
 <div align="center">
 
 <img src="https://img.shields.io/badge/Python-%3E=3.10,%3C3.13-blue?style=flat-square" alt="Python Version"/>
-<img src="https://img.shields.io/badge/LLM%20Support-Mixtral%2C%20Grok%2C%20Gemini%2C%20OpenAI%2C%20Cohere%20%26%20more-orange?style=flat-square" alt="LLM Support"/>
+<img src="https://img.shields.io/badge/LLM%20Support-Mixtral%2C%20Grok%2C%20Gemini%2C%20OpenAI%2C%20Cohere%2C%20HelpingAI%20%26%20more-orange?style=flat-square" alt="LLM Support"/>
 <img src="https://img.shields.io/badge/architecture-Single%20Agent%20%2F%20Clan%20(Multi--Agent)%20A2A%20(Agent%20to%20Agent)-purple?style=flat-square" alt="Architecture"/>
 </div>
 
@@ -283,6 +283,7 @@ from unisonai import config
 config.set_api_key("gemini", "your-api-key")
 config.set_api_key("openai", "your-api-key")
 config.set_api_key("anthropic", "your-api-key")
+config.set_api_key("helpingai", "your-api-key")
 ```
 
 or
@@ -293,6 +294,7 @@ or
 export GEMINI_API_KEY="your-api-key"
 export OPENAI_API_KEY="your-api-key"
 export ANTHROPIC_API_KEY="your-api-key"
+export HAI_API_KEY="your-api-key"
 ```
 
 or
@@ -301,6 +303,8 @@ or
 
 ```python
 llm = Gemini(model="gemini-2.0-flash", api_key="your-api-key")
+# or
+llm = HelpingAI(model="Dhanishtha-2.0-preview", api_key="your-api-key")
 ```
 
 The API keys are stored in a JSON file at `~/.unisonai/config.json` for persistence across sessions.

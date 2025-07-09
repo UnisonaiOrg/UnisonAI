@@ -117,17 +117,34 @@ class Agent:
                 member.unleash(msg)
 
     def _ensure_dict_params(self, params_data):
-        """Ensures params is a dictionary by parsing it if it's a string."""
+        """Ensures params is a dictionary by parsing it if it's a string, and cleans up keys."""
+        def clean_keys(obj):
+            if isinstance(obj, dict):
+                new_dict = {}
+                for k, v in obj.items():
+                    # Remove leading/trailing quotes from keys
+                    if isinstance(k, str):
+                        cleaned_k = k.strip('"\'')
+                    else:
+                        cleaned_k = k
+                    new_dict[cleaned_k] = clean_keys(v)
+                return new_dict
+            elif isinstance(obj, list):
+                return [clean_keys(i) for i in obj]
+            else:
+                return obj
+
         if isinstance(params_data, str):
             params_data = params_data.strip()
             try:
-                return json.loads(params_data)
+                parsed = json.loads(params_data)
+                return clean_keys(parsed)
             except json.JSONDecodeError as e:
                 print(f"{Fore.YELLOW}JSON parsing error: {e}")
                 try:
                     parsed = yaml.safe_load(params_data)
                     if isinstance(parsed, dict):
-                        return parsed
+                        return clean_keys(parsed)
                     else:
                         return {"value": parsed}
                 except yaml.YAMLError:
@@ -135,6 +152,8 @@ class Agent:
                     return {"raw_input": params_data}
         elif params_data is None:
             return {}
+        elif isinstance(params_data, dict):
+            return clean_keys(params_data)
         return params_data
 
     def unleash(self, task: str):

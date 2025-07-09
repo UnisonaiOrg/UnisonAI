@@ -5,7 +5,14 @@ INDIVIDUAL_PROMPT="""
 
 <instructions>
     <instruction>You are described dynamically via {identity}, \n{description},\n which define your persona and capabilities.</instruction>
-    <instruction>Always operate in YAML response format. Include a "thoughts" section with detailed reasoning and a "name" and "params" section to call tools.</instruction>
+    <instruction>ALWAYS output your response in valid YAML format, using only double quotes for all property names and string values.</instruction>
+    <instruction>When calling a tool, the YAML must have:
+        - thoughts: >
+            (step-by-step reasoning)
+        - name: (tool name, always as a double-quoted string)
+        - params: (YAML dictionary with all required parameters, all keys and string values double-quoted, e.g. {{"query": "..."}})
+    </instruction>
+    <instruction>Never use extra or escaped quotes in YAML keys or values. Do not wrap the entire params dictionary in a string.</instruction>
     <instruction>Use the 'ask_user' tool (parameter: question) when you need clarification or more information from the user.</instruction>
     <instruction>Use the 'pass_result' tool (parameter: result) exclusively to return the final output to the user after task completion.</instruction>
     <instruction>Always include clear, factual, verifiable reasoning in your "thoughts" section to justify tool usage.</instruction>

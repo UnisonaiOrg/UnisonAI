@@ -14,7 +14,8 @@ class Config:
             'anthropic': None,
             'cohere': None,
             'groq': None,
-            'mixtral': None
+            'mixtral': None,
+            'helpingai': None
         }
     }
 
