@@ -22,6 +22,9 @@ unisonai helps in making individual agents on focused tasks as well as clan-base
 - [Faq?](#faq)
 - [Contributing And License](#contributing-and-license)
 
+## New Features!!!
+- Async Tool Functionality added.
+
 ## Overview
 
 UnisonAI is a flexible and extensible Python framework for building, coordinating, and scaling multiple AI agents—each powered by the LLM of your choice.
