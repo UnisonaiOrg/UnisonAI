@@ -25,11 +25,27 @@ class Field:
 
     def to_tool_parameter(self) -> ToolParameter:
         """Convert legacy Field to new ToolParameter"""
+        # Try to infer type from default value if available
+        param_type = ToolParameterType.STRING  # Default
+        
+        if self.default_value is not None:
+            if isinstance(self.default_value, bool):
+                param_type = ToolParameterType.BOOLEAN
+            elif isinstance(self.default_value, int):
+                param_type = ToolParameterType.INTEGER
+            elif isinstance(self.default_value, float):
+                param_type = ToolParameterType.FLOAT
+            elif isinstance(self.default_value, list):
+                param_type = ToolParameterType.LIST
+            elif isinstance(self.default_value, dict):
+                param_type = ToolParameterType.DICT
+        
         return ToolParameter(
             name=self.name,
             description=self.description,
             default_value=self.default_value,
-            required=self.required
+            required=self.required,
+            param_type=param_type  # Use inferred or default type
         )
 
 
@@ -55,18 +71,28 @@ class BaseTool(ABC):
         self._metadata: Optional[ToolMetadata] = None
         self._parameters: List[ToolParameter] = []
         self._legacy_params: List[Field] = []  # For backward compatibility
+        self._name: str = ""
+        self._description: str = ""
         
     @property
-    @abstractmethod
     def name(self) -> str:
         """Tool name"""
-        pass
+        return self._name
+    
+    @name.setter  
+    def name(self, value: str):
+        """Set tool name"""
+        self._name = value
     
     @property
-    @abstractmethod
     def description(self) -> str:
         """Tool description"""
-        pass
+        return self._description
+    
+    @description.setter
+    def description(self, value: str):
+        """Set tool description"""
+        self._description = value
     
     @property
     def params(self) -> List[Field]:

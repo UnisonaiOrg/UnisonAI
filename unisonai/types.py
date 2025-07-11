@@ -63,11 +63,15 @@ class ToolParameter(BaseModel):
         if value is None:
             return True
             
-        # Type validation
+        # Type validation with more flexible numeric handling
         if self.param_type == ToolParameterType.STRING and not isinstance(value, str):
             return False
-        elif self.param_type == ToolParameterType.INTEGER and not isinstance(value, int):
-            return False
+        elif self.param_type == ToolParameterType.INTEGER:
+            if not isinstance(value, (int, float)):
+                return False
+            # Allow float that is actually an integer
+            if isinstance(value, float) and not value.is_integer():
+                return False
         elif self.param_type == ToolParameterType.FLOAT and not isinstance(value, (int, float)):
             return False
         elif self.param_type == ToolParameterType.BOOLEAN and not isinstance(value, bool):
@@ -150,6 +154,7 @@ class ClanConfig(BaseModel):
     history_folder: str = Field(default="history", description="Log/history folder")
     output_file: Optional[str] = Field(default=None, description="Final output file")
     max_rounds: int = Field(default=5, description="Maximum communication rounds")
+    verbose: bool = Field(default=True, description="Enable verbose logging")
     
     @validator('clan_name')
     def validate_clan_name(cls, v):

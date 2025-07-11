@@ -1,122 +1,258 @@
 import sys  # Added for exiting the process smoothly
-from unisonai.llms import Gemini
+from typing import Any, Dict, List, Optional, Union
+from pathlib import Path
+import time
+import json
+import os
+import re
+import yaml
+import inspect
+import difflib
+import colorama
+from colorama import Fore, Style
+
+from unisonai.llms.Basellm import BaseLLM
 from unisonai.prompts.agent import AGENT_PROMPT
 from unisonai.prompts.manager import MANAGER_PROMPT
 from unisonai.async_helper import run_async_from_sync, run_sync_in_executor
-import inspect
-import re
-import yaml
-import colorama
-from colorama import Fore, Style
-from typing import Any
-import json
-import difflib  # For fuzzy string matching
+from unisonai.types import (
+    AgentConfig, AgentCommunication, TaskResult, ToolExecutionResult, 
+    MessageRole, LLMMessage
+)
+from unisonai.tools.tool import BaseTool
+
 colorama.init(autoreset=True)
 
 
-def create_tools(tools: list):
+def create_tools(tools: List[Union[BaseTool, type]]) -> Optional[str]:
+    """Create formatted tool descriptions for prompt inclusion with improved typing"""
+    if not tools:
+        return None
+        
     formatted_tools = ""
-    if tools:
-        for tool in tools:
-            # Instantiate the tool if it is provided as a class
-            tool_instance = tool if not isinstance(tool, type) else tool()
-            formatted_tools += f"-TOOL{tools.index(tool)+1}: \n"
-            formatted_tools += "  NAME: " + tool_instance.name + "\n"
-            formatted_tools += "  DESCRIPTION: " + tool_instance.description + "\n"
-            formatted_tools += "  PARAMS: "
-            fields = tool_instance.params
-            for field in fields:
+    for idx, tool in enumerate(tools, 1):
+        # Instantiate the tool if it is provided as a class
+        tool_instance = tool() if isinstance(tool, type) else tool
+        
+        formatted_tools += f"-TOOL{idx}: \n"
+        formatted_tools += f"  NAME: {tool_instance.name}\n"
+        formatted_tools += f"  DESCRIPTION: {tool_instance.description}\n"
+        formatted_tools += "  PARAMS: "
+        
+        # Handle both new and legacy parameter formats
+        if hasattr(tool_instance, 'parameters') and tool_instance.parameters:
+            for param in tool_instance.parameters:
+                formatted_tools += f"""
+     {param.name}:
+       - description: {param.description}
+       - type: {param.param_type.value}
+       - default_value: {param.default_value}
+       - required: {param.required}
+        """
+        elif hasattr(tool_instance, 'params') and tool_instance.params:
+            for field in tool_instance.params:
                 formatted_tools += field.format()
-    else:
-        formatted_tools = None
-
+    
     return formatted_tools
 
 
 class Agent:
+    """Enhanced Agent class with strong typing and better configuration management"""
+    
     def __init__(self,
-                 llm: Gemini,
-                 identity: str,  # Name of the agent
-                 description: str,  # Description of the agent
-                 task: str,  # A Base Example Task According to agents's work
+                 llm: BaseLLM,
+                 identity: str,
+                 description: str,
+                 task: str,
                  verbose: bool = True,
-                 tools: list[Any] = []):
+                 tools: List[Union[BaseTool, type]] = None):
+        """
+        Initialize an Agent with comprehensive configuration validation
+        
+        Args:
+            llm: Language model instance for agent reasoning
+            identity: Unique agent identifier/name  
+            description: Agent's role and responsibilities description
+            task: Agent's primary task or goal
+            verbose: Enable detailed logging and output
+            tools: List of tools available to the agent
+        """
+        # Validate configuration using Pydantic model
+        self.config = AgentConfig(
+            identity=identity,
+            description=description,
+            task=task,
+            verbose=verbose
+        )
+        
+        # Core attributes
         self.llm = llm
-        self.identity = identity
-        self.description = description
-        self.task = task
-        self.plan = None
-        self.history_folder = None  # Renamed for consistency
-        self.rawtools = tools
-        self.tools = create_tools(tools)
-        self.ask_user = False
-        self.user_task = None
-        self.shared_instruction = None
-        self.rawmembers = []
-        self.members = ""
-        self.clan_name = ""
-        self.output_file = None
-        self.verbose = verbose
+        self.identity = self.config.identity
+        self.description = self.config.description
+        self.task = self.config.task
+        self.verbose = self.config.verbose
+        self.max_iterations = self.config.max_iterations
+        
+        # Tool management
+        self.rawtools = tools or []
+        self.tools = create_tools(self.rawtools)
+        self.tool_instances = self._initialize_tools()
+        
+        # Clan-related attributes
+        self.plan: Optional[str] = None
+        self.history_folder: Optional[Path] = None
+        self.user_task: Optional[str] = None
+        self.shared_instruction: Optional[str] = None
+        self.clan_name: str = ""
+        self.output_file: Optional[str] = None
+        self.rawmembers: List['Agent'] = []
+        self.members: str = ""
+        
+        # Communication settings
+        self.ask_user: bool = False  # Agents typically don't ask users directly
+        self.communication_history: List[AgentCommunication] = []
+        self.current_iteration = 0
+        
+    def _initialize_tools(self) -> Dict[str, BaseTool]:
+        """Initialize and validate tool instances"""
+        tool_instances = {}
+        
+        for tool in self.rawtools:
+            try:
+                instance = tool() if isinstance(tool, type) else tool
+                if not isinstance(instance, BaseTool):
+                    if self.verbose:
+                        print(f"{Fore.YELLOW}Warning: Tool {tool} does not inherit from BaseTool{Style.RESET_ALL}")
+                tool_instances[instance.name] = instance
+            except Exception as e:
+                if self.verbose:
+                    print(f"{Fore.RED}Error initializing tool {tool}: {e}{Style.RESET_ALL}")
+        
+        return tool_instances
 
-    def _parse_and_fix_json(self, json_str: str):
-        """Parses JSON string and attempts to fix common errors."""
+    def _parse_and_fix_json(self, json_str: str) -> Union[Dict[str, Any], str]:
+        """Parses JSON string and attempts to fix common errors with better error handling"""
+        if not json_str or not isinstance(json_str, str):
+            return "Error: Invalid JSON input"
+            
         json_str = json_str.strip()
         if not json_str.startswith("{") or not json_str.endswith("}"):
             json_str = json_str[json_str.find("{"): json_str.rfind("}") + 1]
+        
         try:
             return json.loads(json_str)
         except json.JSONDecodeError as e:
-            print(f"{Fore.RED}JSON Error:{Style.RESET_ALL} {e}")
+            if self.verbose:
+                print(f"{Fore.RED}JSON Error:{Style.RESET_ALL} {e}")
+            
+            # Try common fixes
             json_str = json_str.replace("'", '"')
             json_str = re.sub(r",\s*}", "}", json_str)
             json_str = re.sub(r"{\s*,", "{", json_str)
             json_str = re.sub(r"\s*,\s*", ",", json_str)
+            
             try:
-                return [json_str]
+                return json.loads(json_str)
             except json.JSONDecodeError as e:
                 return f"Error: Could not parse JSON - {e}"
 
-    def _get_agent_by_name(self, agent_name: str):
+    def _get_agent_by_name(self, agent_name: str) -> str:
         """Find the closest matching agent from rawmembers based on fuzzy name matching."""
-        ceo_manager_variations = ["ceo", "manager",
-                                  "ceo/manager", "ceo-manager", "ceo manager"]
+        ceo_manager_variations = ["ceo", "manager", "ceo/manager", "ceo-manager", "ceo manager"]
         agent_name_clean = agent_name.lower().strip()
+        
+        # Remove common prefixes
         for prefix in ["agent ", " agent", "the "]:
             agent_name_clean = agent_name_clean.replace(prefix, "")
+            
+        # Check for manager variations
         if agent_name_clean in ceo_manager_variations:
             return "CEO/Manager"
+            
+        # Get available agents
         available_agents = [member.identity for member in self.rawmembers]
         available_agents_lower = [agent.lower() for agent in available_agents]
+        
+        # Exact match
         if agent_name_clean in available_agents_lower:
             index = available_agents_lower.index(agent_name_clean)
             return available_agents[index]
+            
+        # Fuzzy match
         matches = difflib.get_close_matches(
             agent_name_clean, available_agents_lower, n=1, cutoff=0.6)
         if matches:
             index = available_agents_lower.index(matches[0])
             return available_agents[index]
+            
         return agent_name
 
-    def send_message(self, agent_name: str, message: str, additional_resource: str = None, sender: str = None):
-        matched_agent_name = self._get_agent_by_name(agent_name)
-        if matched_agent_name != agent_name and self.verbose:
-            print(
-                f"{Fore.YELLOW}Note: Agent name '{agent_name}' was matched to '{matched_agent_name}'")
-        print(Fore.LIGHTCYAN_EX +
-              f"Status: Sending message to {matched_agent_name}" + Style.RESET_ALL)
-        msg = f"""MESSAGE FROM: {sender}\nMESSAGE TO: {matched_agent_name}\n\n{message}\n\nADDITIONAL RESOURCE:\n{additional_resource}"""
-        is_manager_message = matched_agent_name in [
-            "CEO/Manager", "Manager", "CEO"]
-        for member in self.rawmembers:
-            if is_manager_message:
-                if member.ask_user:
-                    member.unleash(msg)
-                else:
-                    continue
-            elif member.identity == matched_agent_name:
-                member.unleash(msg)
+    def send_message(self, agent_name: str, message: str, additional_resource: Optional[str] = None, sender: Optional[str] = None) -> bool:
+        """
+        Send a message to another agent with enhanced validation and logging
+        
+        Args:
+            agent_name: Target agent's name
+            message: Message content
+            additional_resource: Optional resource reference
+            sender: Sender's name (defaults to self.identity)
+            
+        Returns:
+            bool: True if message was sent successfully
+        """
+        try:
+            matched_agent_name = self._get_agent_by_name(agent_name)
+            sender_name = sender or self.identity
+            
+            if matched_agent_name != agent_name and self.verbose:
+                print(f"{Fore.YELLOW}Note: Agent name '{agent_name}' was matched to '{matched_agent_name}'{Style.RESET_ALL}")
+            
+            if self.verbose:
+                print(f"{Fore.LIGHTCYAN_EX}Status: Sending message to {matched_agent_name}{Style.RESET_ALL}")
+            
+            # Create communication record
+            communication = AgentCommunication(
+                sender=sender_name,
+                recipient=matched_agent_name,
+                message=message,
+                additional_resource=additional_resource,
+                timestamp=str(time.time())
+            )
+            
+            self.communication_history.append(communication)
+            
+            # Format message for delivery
+            formatted_message = f"""MESSAGE FROM: {sender_name}
+MESSAGE TO: {matched_agent_name}
 
-    def _ensure_dict_params(self, params_data):
+{message}
+
+ADDITIONAL RESOURCE:
+{additional_resource or 'None'}"""
+            
+            # Determine if this is a manager message
+            is_manager_message = matched_agent_name in ["CEO/Manager", "Manager", "CEO"]
+            
+            # Deliver message to target agent
+            for member in self.rawmembers:
+                if is_manager_message:
+                    if member.ask_user:  # Manager agent
+                        member.unleash(formatted_message)
+                        return True
+                elif member.identity == matched_agent_name:
+                    member.unleash(formatted_message)
+                    return True
+            
+            if self.verbose:
+                print(f"{Fore.YELLOW}Warning: Agent '{matched_agent_name}' not found in clan members{Style.RESET_ALL}")
+            return False
+            
+        except Exception as e:
+            if self.verbose:
+                print(f"{Fore.RED}Error sending message: {e}{Style.RESET_ALL}")
+            return False
+
+    def _ensure_dict_params(self, params_data: Any) -> Dict[str, Any]:
         """Ensures params is a dictionary by parsing it if it's a string, and cleans up keys."""
         def clean_keys(obj):
             if isinstance(obj, dict):
@@ -140,7 +276,8 @@ class Agent:
                 parsed = json.loads(params_data)
                 return clean_keys(parsed)
             except json.JSONDecodeError as e:
-                print(f"{Fore.YELLOW}JSON parsing error: {e}")
+                if self.verbose:
+                    print(f"{Fore.YELLOW}JSON parsing error: {e}{Style.RESET_ALL}")
                 try:
                     parsed = yaml.safe_load(params_data)
                     if isinstance(parsed, dict):
