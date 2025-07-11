@@ -132,18 +132,6 @@ class SingleAgentConfig(BaseModel):
     output_file: Optional[str] = Field(default=None, description="Output file path")
     history_folder: str = Field(default="history", description="History folder path")
     max_iterations: int = Field(default=10, description="Maximum iterations for task execution")
-    
-    @validator('identity')
-    def validate_identity(cls, v):
-        if not v or not v.strip():
-            raise ValueError("Identity cannot be empty")
-        return v.strip()
-    
-    @validator('description')
-    def validate_description(cls, v):
-        if not v or not v.strip():
-            raise ValueError("Description cannot be empty")
-        return v.strip()
 
 
 class ClanConfig(BaseModel):
