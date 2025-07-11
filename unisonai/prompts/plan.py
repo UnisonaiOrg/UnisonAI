@@ -1,61 +1,139 @@
 
-PLAN_PROMPT="""
-<purpose>
-    Create a detailed, executable plan for a team of agents to complete a client task, ensuring:
-    - Minimal hallucinations
-    - Concrete and verifiable tasks
-    - Strict, balanced delegation
-    - Logical, stepwise flow
-    The plan must always start with the Manager (CEO) and end with their final report. The plan must be adaptable to both single and multi-agent teams.
-</purpose>
+PLAN_PROMPT = """# Strategic Team Planning Instructions
 
-<instructions>
-    <instruction>ALWAYS output your plan in the specified XML format, using only the provided team members: {members}.</instruction>
-    <instruction>Minimize hallucinations by focusing on concrete, verifiable actions and avoiding ambiguous or speculative language.</instruction>
-    <instruction>Distribute tasks strictly and evenly among the available agents. No agent should be overloaded or assigned multiple sequential steps unless absolutely necessary. Prevent self-delegation (an agent communicating with itself).</instruction>
-    <instruction>Maintain a logical, stepwise flow of tasks. Each step must naturally follow from the previous one. Prioritize delegation over assigning multiple sequential tasks to one agent where possible.</instruction>
-    <instruction>The Manager (CEO) must always initiate and conclude the plan (with a final report).</instruction>
-    <instruction>If the team consists of only the Manager, proceed directly to task execution without delegation steps. Clearly explain the rationale for this approach in the <think> section.</instruction>
-    <instruction>Do not create new agents or assume their existence. Use only the provided team members: {members}.</instruction>
-    <instruction>Never include any agent or step not explicitly listed in {members}.</instruction>
-    <instruction>Never use vague, imaginative, or unverifiable steps. Every step must be actionable and concrete.</instruction>
-    <instruction>Output the plan in the specified XML format, strictly following the structure in the examples.</instruction>
-</instructions>
+## Planning Objective
+Create a comprehensive, executable plan for the team to complete the client task efficiently and effectively, with minimal redundancy and optimal resource utilization.
 
-<examples>
-    <example>
-        <members>Manager (CEO), Researcher, Writer</members>
-        <plan>
-            <think>Step 1: The Manager evaluates the client task "Write a blog post about AI." and initiates the plan. Reasoning: The Researcher is best suited for gathering information, and the Writer will create the blog post. The manager will review and submit the final draft.
+## Client Task
+**Objective:** {client_task}
 
-            Task List:
-            - Researcher: Gather relevant information on AI. Expected Outcome: Comprehensive notes on AI.
-            - Writer: Write a blog post based on the Researcher's notes. Expected Outcome: A draft blog post.
-            - Manager: Review and submit the final blog post. Expected Outcome: A polished and submitted blog post.</think>
-            <step>1: Manager delegates research to Researcher.</step>
-            <step>2: Researcher gathers information on AI and sends it to the Writer.</step>
-            <step>3: Writer drafts the blog post and submits it to the Manager.</step>
-            <step>4: Manager reviews and submits the final blog post.</step>
-        </plan>
-    </example>
-    <example>
-        <members>Manager (CEO)</members>
-        <plan>
-            <think>Step 1: The Manager evaluates the client task "Summarize the latest news on quantum computing." and initiates the plan. Reasoning: As the only team member, the Manager will perform all tasks. Since there is only one member, delegation is not possible or necessary. This ensures efficiency and avoids redundant steps.
+## Available Team Members
+**Team Composition:** {members}
 
-            Task List:
-            - Manager: Research and summarize the latest news on quantum computing. Expected Outcome: A concise summary of quantum computing news.</think>
-            <step>1: Manager researches quantum computing news.</step>
-            <step>2: Manager summarizes findings.</step>
-            <step>3: Manager reports the summary.</step>
-        </plan>
-    </example>
-</examples>
+## Planning Principles
+### Core Requirements
+1. **Concrete & Actionable** - Every step must be specific and executable
+2. **Balanced Delegation** - Distribute tasks evenly based on agent expertise
+3. **Logical Sequence** - Each step should naturally flow from the previous one
+4. **Manager-Centric** - Plan must start and end with Manager coordination
+5. **No Self-Delegation** - Agents cannot delegate tasks to themselves
 
-<content>
-    <members>{members}</members>
-    <client_task>{client_task}</client_task>
-</content>
-"""
+### Quality Standards
+- **Minimize Hallucinations** - Base all planning on factual, verifiable actions
+- **Prevent Overloading** - No agent should receive multiple sequential tasks unless necessary
+- **Ensure Collaboration** - Foster teamwork and knowledge sharing
+- **Maintain Focus** - Keep all activities aligned with the client objective
 
-# - If the manager is the only member and then just go straight into the action, since there is a single member which is the manger itself there is no need of any delegation of tasks.
+## Response Format
+### MANDATORY: XML Structure
+```xml
+<plan>
+    <think>
+        [Detailed strategic analysis explaining your approach]
+        - Task breakdown and rationale
+        - Agent assignment justification
+        - Expected outcomes for each step
+        - Risk considerations and mitigation
+    </think>
+    <step>1: [Specific action with agent assignment]</step>
+    <step>2: [Next logical action with agent assignment]</step>
+    <step>3: [Continue sequence...]</step>
+    <step>N: [Final step - Manager delivers results]</step>
+</plan>
+```
+
+## Planning Framework
+### Strategic Analysis Process
+1. **Task Decomposition** - Break down the client objective into manageable components
+2. **Skill Mapping** - Match task requirements to available agent expertise
+3. **Workflow Design** - Create logical sequence of activities
+4. **Resource Allocation** - Ensure balanced workload distribution
+5. **Quality Assurance** - Plan for review and validation steps
+
+### Team Coordination Strategy
+- **Information Flow** - Plan for effective data and insight sharing between agents
+- **Dependency Management** - Identify and sequence interdependent tasks
+- **Progress Tracking** - Include checkpoints and status updates
+- **Risk Mitigation** - Anticipate potential issues and plan alternatives
+
+## Planning Examples
+
+### Multi-Agent Team Example
+**Team:** Manager (CEO), Researcher, Data_Analyst, Writer
+**Task:** Create comprehensive market analysis report
+
+```xml
+<plan>
+    <think>
+        Strategic Analysis: The client needs a comprehensive market analysis report. This requires data gathering, analysis, and professional presentation.
+        
+        Task Breakdown:
+        - Research: Market data collection and competitor analysis (Researcher expertise)
+        - Analysis: Data processing and insight generation (Data_Analyst expertise)  
+        - Documentation: Professional report creation (Writer expertise)
+        - Coordination: Quality assurance and delivery (Manager oversight)
+        
+        Agent Assignment Rationale:
+        - Researcher: Best equipped for market intelligence gathering
+        - Data_Analyst: Specialized in quantitative analysis and trend identification
+        - Writer: Expert in professional documentation and presentation
+        - Manager: Strategic oversight and final quality control
+        
+        Expected Outcomes:
+        - Comprehensive market data and competitive landscape
+        - Statistical analysis with actionable insights
+        - Professional report meeting client standards
+    </think>
+    <step>1: Manager initiates project and delegates market research to Researcher</step>
+    <step>2: Researcher gathers market data and competitor information, sends findings to Data_Analyst</step>
+    <step>3: Data_Analyst processes research data and generates statistical insights, forwards analysis to Writer</step>
+    <step>4: Writer creates comprehensive report using research and analysis, submits draft to Manager</step>
+    <step>5: Manager reviews final report and delivers to client</step>
+</plan>
+```
+
+### Single Manager Team Example
+**Team:** Manager (CEO) only
+**Task:** Summarize recent technology trends
+
+```xml
+<plan>
+    <think>
+        Strategic Analysis: Client requests technology trend summary. Since Manager is the only team member, all tasks must be executed independently without delegation.
+        
+        Approach Rationale:
+        - No delegation possible with single member team
+        - Manager must handle research, analysis, and documentation
+        - Focus on efficiency and direct execution
+        
+        Expected Outcome:
+        - Concise, well-researched technology trend summary
+    </think>
+    <step>1: Manager researches current technology trends and developments</step>
+    <step>2: Manager analyzes findings and identifies key patterns</step>
+    <step>3: Manager compiles comprehensive summary and delivers to client</step>
+</plan>
+```
+
+## Quality Assurance Checklist
+### Pre-Submission Validation
+- [ ] Every step is concrete and actionable
+- [ ] Task distribution is balanced among team members
+- [ ] No agent is assigned to communicate with themselves
+- [ ] Plan follows logical sequence from start to finish
+- [ ] Manager initiates and concludes the plan
+- [ ] All team members are effectively utilized
+- [ ] No speculative or vague instructions included
+
+### Strategic Considerations
+- **Team Size Adaptation** - Plan complexity should match team capacity
+- **Expertise Utilization** - Maximize each agent's specialized skills
+- **Efficient Communication** - Minimize unnecessary information transfers
+- **Result Focus** - Every step should contribute to the final objective
+
+## Critical Reminders
+- **Use ONLY provided team members** - Do not create or assume additional agents
+- **Maintain logical flow** - Each step should enable the next step
+- **Prevent bottlenecks** - Avoid creating dependencies that could delay progress
+- **Focus on deliverables** - Ensure every step produces tangible value
+- **Plan for success** - Design workflow that maximizes probability of excellent results"""
