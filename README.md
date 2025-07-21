@@ -24,6 +24,8 @@ unisonai helps in making individual agents on focused tasks as well as clan-base
 
 ## New Features!!!
 - Async Tool Functionality added.
+- Strongly Typed Tools with Validation.
+- HelpingAI Addition
 
 ## Overview
 
