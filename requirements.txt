@@ -9,5 +9,5 @@ anthropic
 openai>=1.13.3
 googlesearch-python
 mistralai
+nest_asyncio
 pydantic>=2.4.2
-HelpingAI
