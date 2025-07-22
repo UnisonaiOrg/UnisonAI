@@ -11,6 +11,11 @@ from .websearch import WebSearchTool
 from .memory import MemoryTool
 from .rag import RAGTool
 
+# MCP (Model Context Protocol) support
+from .mcp_manager import MCPManager
+from .mcp_tool import MCPTool
+from .mcp_errors import MCPError, MCPConnectionError, MCPToolExecutionError, MCPConfigurationError
+
 __all__ = [
     "BaseTool", 
     "Field", 
@@ -18,5 +23,12 @@ __all__ = [
     "WebSearchTool", 
     "MemoryTool", 
     "RAGTool",
-    "ToolParameterType"
+    "ToolParameterType",
+    # MCP support
+    "MCPManager",
+    "MCPTool",
+    "MCPError",
+    "MCPConnectionError", 
+    "MCPToolExecutionError",
+    "MCPConfigurationError"
 ]
