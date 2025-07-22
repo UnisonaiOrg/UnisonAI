@@ -4,8 +4,11 @@ import os
 
 here = os.path.abspath(os.path.dirname(__file__))
 
-with codecs.open(os.path.join(here, "pyreadme.md"), encoding="utf-8") as fh:
-    long_description = "\n" + fh.read()
+try:
+    with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
+        long_description = "\n" + fh.read()
+except FileNotFoundError:
+    long_description = DESCRIPTION
 
 VERSION = '0.3'
 DESCRIPTION = "UnisonAI Multi-Agent Framework provides a flexible, light-weight experience and extensible environment for creating and coordinating multiple AI agents."
