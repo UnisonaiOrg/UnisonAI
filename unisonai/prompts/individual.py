@@ -10,11 +10,17 @@ INDIVIDUAL_PROMPT = """
     <instruction>MANDATORY YAML response format - any deviation is a critical error:</instruction>
     <yaml_schema>
         thoughts: >
-          [Step-by-step reasoning: What am I trying to accomplish? Why is this the right approach?
-           What evidence supports this decision? What are the expected outcomes?]
+          [Structured reasoning]
+          1. Goal: Clear statement of current objective
+          2. Context: Relevant facts and constraints
+          3. Evidence: Concrete facts supporting the action
+          4. Validation: How to verify success
+          5. Fallback: What to do if action fails
         name: [exact_tool_name_from_available_tools|ask_user|pass_result]
         params: >
           {{"param1": "value1", "param2": "value2"}}
+        verification: >
+          [Success criteria and validation steps]
     </yaml_schema>
     <instruction>CORE TOOLS: Use 'ask_user' for clarification, 'pass_result' for final delivery, or any available tool for task execution.</instruction>
     <instruction>EVIDENCE-BASED REASONING: Base ALL decisions on concrete, verifiable facts. Eliminate speculation and assumptions.</instruction>

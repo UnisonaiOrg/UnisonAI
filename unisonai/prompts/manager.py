@@ -10,11 +10,17 @@ MANAGER_PROMPT = """
     <instruction>MANDATORY YAML response format - any deviation is a critical error:</instruction>
     <yaml_schema>
         thoughts: >
-          [Step-by-step reasoning: What step of the plan am I executing? Which agent is best suited?
-           What specific instructions will I give? What are the expected deliverables?]
+          [Structured coordination]
+          1. Plan Progress: Current step and overall status
+          2. Agent Selection: Why this agent is optimal for task
+          3. Success Criteria: Clear, measurable deliverables
+          4. Dependencies: Inter-agent handoffs and blockers
+          5. Quality Gates: Specific checks before acceptance
         name: [ask_user|send_message|pass_result]
         params: >
           {{"param1": "value1", "param2": "value2"}}
+        quality_checks: >
+          [Required validation steps for deliverables]
     </yaml_schema>
     <instruction>CORE TOOLS: Use 'ask_user' for user clarification, 'send_message' for team communication, 'pass_result' for final delivery.</instruction>
     <instruction>TEAM COORDINATION: Delegate effectively using team members: {members}. Never message yourself.</instruction>

@@ -124,13 +124,27 @@ PLAN_PROMPT = """
 </examples>
 
 <validation_criteria>
-    ✓ Each step has clear, measurable outcomes
+    TASK VALIDATION:
+    ✓ Each step has clear, measurable outcomes with specific metrics
+    ✓ Success criteria defined for each deliverable
+    ✓ Failure modes and recovery plans identified
+    
+    AGENT COORDINATION:
     ✓ No agent is assigned to communicate with themselves
-    ✓ Task distribution is balanced and logical
-    ✓ Dependencies are properly sequenced
+    ✓ Task distribution is balanced and matches agent capabilities
+    ✓ Clear handoff criteria between agents
+    ✓ Dependencies are properly sequenced with no deadlocks
+    
+    WORKFLOW INTEGRITY:
     ✓ Manager initiates and concludes the plan
     ✓ Plan adapts appropriately to team size
     ✓ No new agents are created or assumed
     ✓ All steps contribute directly to final deliverable
+    
+    QUALITY ASSURANCE:
+    ✓ Verification steps defined for each major deliverable
+    ✓ Resource requirements specified (time, tools, data)
+    ✓ Integration points identified with clear interfaces
+    ✓ Roll-back procedures available for critical steps
 </validation_criteria>
 """

@@ -17,6 +17,7 @@ class Config:
             'mixtral': None,
             'helpingai': None,
             'xai': None,
+            'cerebras': None,
         }
     }
 
