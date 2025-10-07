@@ -776,15 +776,6 @@ The API keys are stored in a JSON file at `~/.unisonai/config.json` for persiste
 ---
 
 ## Contributing and License
-
-<div align="center">
-
-<b>Founder:</b> <a href="https://github.com/E5Anant">Anant Sharma</a> <br/>
-<b>Co-Contributors:
-</b> <a href="https://github.com/AnonymousCoderArtist">Lokesh Lal Maljhi [@AnonymousCoderArtist]</a>
-
-<a href="https://github.com/OEvortex">Abhay Koul [@OEvortex]</a> <br/>
-
 PRs and issues welcome! The project is under the Apache 2.0 License.
 
 <a href="https://github.com/UnisonAIInc/UnisonAI/issues">Open issues</a> •
@@ -813,5 +804,6 @@ PRs and issues welcome! The project is under the Apache 2.0 License.
 <div align="center">
   <b>UnisonAI: Orchestrate the Future of Multi-Agent AI.</b>
 </div>
+
 
 
