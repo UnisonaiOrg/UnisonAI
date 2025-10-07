@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="https://github.com/UnisonAIInc/UnisonAI/blob/main/assets/UnisonAI_Banner.jpg" alt="UnisonAI Banner" width="100%"/>
+<img src="https://github.com/UnisonaiOrg/UnisonAI/blob/main/assets/UnisonaiOrg.jpg" alt="UnisonAI Banner" width="80%"/>
 
 </div>
 
@@ -813,4 +813,5 @@ PRs and issues welcome! The project is under the Apache 2.0 License.
 <div align="center">
   <b>UnisonAI: Orchestrate the Future of Multi-Agent AI.</b>
 </div>
+
 
