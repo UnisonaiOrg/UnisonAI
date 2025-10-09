@@ -685,6 +685,7 @@ config.set_api_key("gemini", "your-api-key")
 config.set_api_key("openai", "your-api-key")
 config.set_api_key("anthropic", "your-api-key")
 config.set_api_key("helpingai", "your-api-key")
+config.set_api_key("cerebras", "your-api-key")
 ```
 
 or
@@ -696,6 +697,7 @@ export GEMINI_API_KEY="your-api-key"
 export OPENAI_API_KEY="your-api-key"
 export ANTHROPIC_API_KEY="your-api-key"
 export HAI_API_KEY="your-api-key"
+export CEREBRAS_API_KEY="your-api-key"
 ```
 
 or
@@ -703,6 +705,7 @@ or
 3. Passing the API key directly when initializing the LLM:
 
 ```python
+# examples
 llm = Gemini(model="gemini-2.0-flash", api_key="your-api-key")
 # or
 llm = HelpingAI(model="Dhanishtha-2.0-preview", api_key="your-api-key")
@@ -804,6 +807,7 @@ PRs and issues welcome! The project is under the Apache 2.0 License.
 <div align="center">
   <b>UnisonAI: Orchestrate the Future of Multi-Agent AI.</b>
 </div>
+
 
 
 
