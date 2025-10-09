@@ -37,7 +37,7 @@ UnisonAI is a flexible and extensible Python framework for building, coordinatin
 - **Agent (as part of a Clan):** For teamwork, coordination, and distributed problem-solving.
 - **Tool System:** Easily augment agents with custom, pluggable tools (web search, time, APIs, your own logic).
 
-Supports Cohere, Mixtral, Groq, Gemini, Grok, OpenAI, Anthropic, HelpingAI, and any custom model (just extend `BaseLLM`). UnisonAI is designed for real-world, production-grade multi-agent AI applications.
+Supports Cohere, Mixtral, Groq, Gemini, Grok, OpenAI, Anthropic, HelpingAI, Cerebras, and any custom model (just extend `BaseLLM`). UnisonAI is designed for real-world, production-grade multi-agent AI applications.
 
 ---
 
@@ -807,6 +807,7 @@ PRs and issues welcome! The project is under the Apache 2.0 License.
 <div align="center">
   <b>UnisonAI: Orchestrate the Future of Multi-Agent AI.</b>
 </div>
+
 
 
 
