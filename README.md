@@ -1,4 +1,4 @@
-# Table of Content:
+# Table of Contents
 
 - [Overview](#overview)
 - [Why UnisonAI?](#why-unisonai)
@@ -6,7 +6,7 @@
 - [Core Components](#core-components)
 - [Parameter Reference Tables](#parameter-reference-tables)
 - [Usage Examples](#usage-examples)
-- [Faq?](#faq)
+- [FAQ](#faq)
 - [Contributing And License](#contributing-and-license)
 
 <div align="center">
@@ -95,12 +95,16 @@ UnisonAI stands out with its unique **Agent-to-Agent (A2A) communication** archi
 
 *Comparison with popular agent frameworks - UnisonAI leads in A2A communication and type safety*
 
+</div>
+
 ### 🎯 Perfect For:
 
 - **Complex Research Tasks**: Multiple agents gathering, analyzing, and synthesizing information
 - **Workflow Automation**: Coordinated agents handling multi-step business processes
 - **Content Creation**: Specialized agents for research, writing, editing, and publishing
 - **Data Analysis**: Distributed agents processing large datasets with different expertise
+
+---
 
 ## 🏗️ Core Components
 
@@ -112,9 +116,12 @@ UnisonAI stands out with its unique **Agent-to-Agent (A2A) communication** archi
 | **Tool System** | Extensible capability framework | Type validation, error handling, standardized results |
 | **MCP Integration** | External tool connectivity | MCP server support, protocol translation, service integration |
 
+---
+
 ## 📋 Usage Examples
 
 ### Single Agent
+
 ```python
 from unisonai.tools.websearch import WebSearchTool
 
@@ -127,6 +134,7 @@ agent.unleash(task="Latest AI trends")
 ```
 
 ### Multi-Agent Clan
+
 ```python
 from unisonai import Agent, Clan
 
@@ -143,6 +151,7 @@ clan.unleash()
 ```
 
 ### Custom Tools
+
 ```python
 from unisonai.tools.tool import BaseTool, Field
 from unisonai.tools.types import ToolParameterType
@@ -162,9 +171,12 @@ class CalculatorTool(BaseTool):
         return a + b if operation == "add" else a * b
 ```
 
+---
+
 ## 🔧 Configuration
 
 ### API Keys
+
 ```python
 from unisonai import config
 
@@ -181,6 +193,7 @@ llm = Gemini(api_key="your-key")
 ```
 
 ### MCP Servers
+
 ```python
 MCP_CONFIG = {
     "mcpServers": {
@@ -189,6 +202,8 @@ MCP_CONFIG = {
     }
 }
 ```
+
+---
 
 ## 📚 Documentation Hub
 
@@ -212,27 +227,36 @@ MCP_CONFIG = {
 - **[Tool Examples](https://github.com/UnisonAIInc/UnisonAI/blob/main/examples/tool_example.py)** - Custom tool implementations
 - **[MCP Examples](https://github.com/UnisonAIInc/UnisonAI/blob/main/examples/mcp_example.py)** - External tool integration
 
+---
+
 ## ❓ FAQ
 
 <details>
 <summary><b>What is UnisonAI?</b></summary>
-Python framework for building and orchestrating AI agents with A2A communication.</details>
+Python framework for building and orchestrating AI agents with A2A communication.
+</details>
 
 <details>
 <summary><b>When should I use a Clan?</b></summary>
-For complex, multi-step tasks requiring specialized agents working together.</details>
+For complex, multi-step tasks requiring specialized agents working together.
+</details>
 
 <details>
 <summary><b>Can I add custom LLMs?</b></summary>
-Yes! Extend <code>BaseLLM</code> class to integrate any model provider.</details>
+Yes! Extend <code>BaseLLM</code> class to integrate any model provider.
+</details>
 
 <details>
 <summary><b>What are tools?</b></summary>
-Reusable components that extend agent capabilities (web search, APIs, custom logic).</details>
+Reusable components that extend agent capabilities (web search, APIs, custom logic).
+</details>
 
 <details>
 <summary><b>How do I manage API keys?</b></summary>
-Use config system, environment variables, or pass directly to LLMs.</details>
+Use config system, environment variables, or pass directly to LLMs.
+</details>
+
+---
 
 ## 🤝 Contributing
 
@@ -243,9 +267,3 @@ PRs and issues welcome! See our [Contributing Guide](https://github.com/UnisonAI
 <a href="https://github.com/UnisonAIInc/UnisonAI">Suggest Features</a>
 
 ---
-
-
-
-
-
-
