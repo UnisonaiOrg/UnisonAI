@@ -1,0 +1,30 @@
+# Core LLM Providers
+cohere>=5.0.0
+groq>=0.4.0
+google-generativeai>=0.5.0
+anthropic>=0.20.0
+openai>=1.13.3
+mistralai>=0.4.0
+HelpingAI>=1.0.0
+
+# Web Search and API Tools
+duckduckgo-search>=5.0.0
+requests>=2.31.0
+
+# Data Validation and Configuration
+pydantic>=2.4.2
+python-dotenv>=1.0.0
+
+# Async Support
+nest-asyncio>=1.6.0
+
+# Terminal Output and UX
+rich>=13.7.0
+colorama>=0.4.6
+
+# Model Context Protocol
+mcp>=1.0.0
+
+# Optional: Remove if not needed
+# googlesearch-python  # Redundant with duckduckgo-search
+
