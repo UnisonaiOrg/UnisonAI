@@ -1,8 +1,12 @@
-<div align="center">
+<p align="center">
+  <img 
+    src="https://github.com/UnisonaiOrg/UnisonAI/blob/main/assets/UnisonaiOrg.jpg" 
+    alt="Unison Banner" 
+    width="100%" 
+    style="border-radius:15px;"
+  />
+</p>
 
-<img src="https://github.com/UnisonaiOrg/UnisonAI/blob/main/assets/UnisonaiOrg.jpg" alt="UnisonAI Banner" width="100%"/>
-
-</div>
 
 UnisonAI is a flexible and extensible Python framework built on agent to agent (a2a) for building, coordinating,
 and scaling multiple AI agents—each powered by the LLM of your choice,
@@ -807,6 +811,7 @@ PRs and issues welcome! The project is under the Apache 2.0 License.
 <div align="center">
   <b>UnisonAI: Orchestrate the Future of Multi-Agent AI.</b>
 </div>
+
 
 
 
