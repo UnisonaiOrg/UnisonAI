@@ -251,6 +251,8 @@ Use config system, environment variables, or pass directly to LLMs.
 
 ## Contributing
 
+Founder: Anant Sharma (E5Anant)[https://github.com/E5Anant]
+
 PRs and issues welcome! See our [Contributing Guide](https://github.com/UnisonaiOrg/UnisonAI/issues).
 
 <a href="https://github.com/UnisonaiOrg/UnisonAI/issues">Open Issues</a> •
@@ -258,4 +260,5 @@ PRs and issues welcome! See our [Contributing Guide](https://github.com/Unisonai
 <a href="https://github.com/UnisonaiOrg/UnisonAI">Suggest Features</a>
 
 ---
+
 
