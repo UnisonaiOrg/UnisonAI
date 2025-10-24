@@ -1,17 +1,20 @@
+
+<div align="center">
+  <img src="https://github.com/UnisonaiOrg/UnisonAI/blob/main/assets/UnisonAI.jpg" alt="UnisonAI Banner" width="90%"/>
+</div>
+
 # Table of Contents
 
 - [Overview](#overview)
-- [Why UnisonAI?](#why-unisonai)
-- [Installation](#installation)
+- [Why UnisonAI?](#what-makes-unisonai-special)
+- [Installation](#quick-start)
 - [Core Components](#core-components)
-- [Parameter Reference Tables](#parameter-reference-tables)
+- [Configuration](#configuration)
+- [Parameter Reference Tables](#documentation-hub)
 - [Usage Examples](#usage-examples)
 - [FAQ](#faq)
-- [Contributing And License](#contributing-and-license)
+- [Contributing And License](#contributing)
 
-<div align="center">
-  <img src="https://github.com/UnisonAIInc/UnisonAI/blob/main/assets/UnisonaiOrg.jpg" alt="UnisonAI Banner" width="100%"/>
-</div>
 
 <div align="center">
   <h1>UnisonAI</h1>
@@ -19,14 +22,26 @@
 </div>
 
 <p align="center">
-  <a href="https://github.com/UnisonAIInc/UnisonAI/stargazers"><img src="https://img.shields.io/github/stars/UnisonAIInc/UnisonAI" alt="Stars"/></a>
-  <a href="https://github.com/UnisonAIInc/UnisonAI/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-green.svg" alt="License"/></a>
+  <a href="https://github.com/UnisonaiOrg/UnisonAI/stargazers"><img src="https://img.shields.io/github/stars/UnisonaiOrg/UnisonAI" alt="Stars"/></a>
+  <a href="https://github.com/UnisonaiOrg/UnisonAI/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-green.svg" alt="License"/></a>
   <img src="https://img.shields.io/badge/Python-%3E=3.10,%3C3.13-blue?style=flat-square" alt="Python Version"/>
 </p>
 
 ---
 
-## 🚀 Quick Start
+## Overview
+
+UnisonAI is a flexible and extensible Python framework for building, coordinating, and scaling multiple AI agents—each powered by the LLM of your choice.
+
+- **Single_Agent:** For solo, focused tasks.
+- **Agent (as part of a Clan):** For teamwork, coordination, and distributed problem-solving.
+- **Tool System:** Easily augment agents with custom, pluggable tools (web search, time, APIs, your own logic).
+
+Supports Cohere, Mixtral, Groq, Gemini, Grok, OpenAI, Anthropic, HelpingAI, and any custom model (just extend `BaseLLM`). UnisonAI is designed for real-world, production-grade multi-agent AI applications.
+
+---
+
+## Quick Start
 
 ```bash
 pip install unisonai
@@ -48,11 +63,11 @@ print(agent.unleash(task="Explain quantum computing"))
 
 ---
 
-## 🌟 What Makes UnisonAI Special
+## What Makes UnisonAI Special
 
 UnisonAI stands out with its unique **Agent-to-Agent (A2A) communication** architecture, enabling seamless coordination between AI agents as if they were human team members collaborating on complex tasks.
 
-### 🤝 A2A Communication Architecture
+### A2A Communication Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -72,8 +87,12 @@ UnisonAI stands out with its unique **Agent-to-Agent (A2A) communication** archi
 │  └─────────────┘           └─────────────┘           └─────────────┘  │
 └─────────────────────────────────────────────────────────────────┘
 ```
+<div>
+  <img src="https://github.com/UnisonaiOrg/UnisonAI/blob/main/assets/Example.jpg" alt="Example" width="60%"/>
+</div>
 
-### 🔥 Latest Enhancements
+
+### Latest Enhancements
 
 - **🔒 Strong Type Validation**: All tool parameters validated against `ToolParameterType` enum before execution
 - **🛡️ Enhanced Error Handling**: Comprehensive error catching with detailed metadata for debugging
@@ -82,22 +101,7 @@ UnisonAI stands out with its unique **Agent-to-Agent (A2A) communication** archi
 
 ---
 
-## 💡 Why Choose UnisonAI?
-
-<div align="center">
-
-| Framework | Single Agent | Multi-Agent | A2A Communication | Type Safety | MCP Support |
-|-----------|--------------|-------------|-------------------|-------------|-------------|
-| **UnisonAI** | ✅ | ✅ | ✅ **Native** | ✅ | ✅ |
-| AutoGen | ✅ | ✅ | ❌ | ⚠️ Limited | ❌ |
-| LangChain | ✅ | ⚠️ Basic | ❌ | ⚠️ Limited | ❌ |
-| CrewAI | ❌ | ✅ | ❌ | ⚠️ Limited | ❌ |
-
-*Comparison with popular agent frameworks - UnisonAI leads in A2A communication and type safety*
-
-</div>
-
-### 🎯 Perfect For:
+### Perfect For:
 
 - **Complex Research Tasks**: Multiple agents gathering, analyzing, and synthesizing information
 - **Workflow Automation**: Coordinated agents handling multi-step business processes
@@ -106,7 +110,7 @@ UnisonAI stands out with its unique **Agent-to-Agent (A2A) communication** archi
 
 ---
 
-## 🏗️ Core Components
+## Core Components
 
 | Component | Purpose | Key Features |
 |-----------|---------|--------------|
@@ -118,7 +122,7 @@ UnisonAI stands out with its unique **Agent-to-Agent (A2A) communication** archi
 
 ---
 
-## 📋 Usage Examples
+## Usage Examples
 
 ### Single Agent
 
@@ -173,7 +177,7 @@ class CalculatorTool(BaseTool):
 
 ---
 
-## 🔧 Configuration
+## Configuration
 
 ### API Keys
 
@@ -205,31 +209,31 @@ MCP_CONFIG = {
 
 ---
 
-## 📚 Documentation Hub
+## Documentation Hub
 
 ### 🚀 **Getting Started**
-- **[Quick Start Guide](https://github.com/UnisonAIInc/UnisonAI/blob/main/docs/quick-start.md)** - 5-minute setup guide
-- **[Installation](https://github.com/UnisonAIInc/UnisonAI/blob/main/docs/README.md#installation)** - Detailed installation options
+- **[Quick Start Guide](https://github.com/UnisonaiOrg/UnisonAI/blob/main/docs/quick-start.md)** - 5-minute setup guide
+- **[Installation](https://github.com/UnisonaiOrg/UnisonAI/blob/main/docs/README.md#installation)** - Detailed installation options
 
 ### 📖 **Core Documentation**
-- **[API Reference](https://github.com/UnisonAIInc/UnisonAI/blob/main/docs/api-reference.md)** - Complete API documentation
-- **[Architecture Guide](https://github.com/UnisonAIInc/UnisonAI/blob/main/docs/architecture.md)** - System design and patterns
-- **[Usage Guidelines](https://github.com/UnisonAIInc/UnisonAI/blob/main/docs/usage-guide.md)** - Best practices and patterns
+- **[API Reference](https://github.com/UnisonaiOrg/UnisonAI/blob/main/docs/api-reference.md)** - Complete API documentation
+- **[Architecture Guide](https://github.com/UnisonaiOrg/UnisonAI/blob/main/docs/architecture.md)** - System design and patterns
+- **[Usage Guidelines](https://github.com/UnisonaiOrg/UnisonAI/blob/main/docs/usage-guide.md)** - Best practices and patterns
 
 ### 🛠️ **Advanced Features**
-- **[Tool System Guide](https://github.com/UnisonAIInc/UnisonAI/blob/main/docs/tools-guide.md)** - Custom tool creation and validation
-- **[MCP Integration](https://github.com/UnisonAIInc/UnisonAI/blob/main/docs/mcp-integration.md)** - External tool integration
-- **[Parameter Reference](https://github.com/UnisonAIInc/UnisonAI/blob/main/docs/README.md#parameter-reference-tables)** - Complete parameter documentation
+- **[Tool System Guide](https://github.com/UnisonaiOrg/UnisonAI/blob/main/docs/tools-guide.md)** - Custom tool creation and validation
+- **[MCP Integration](https://github.com/UnisonaiOrg/UnisonAI/blob/main/docs/mcp-integration.md)** - External tool integration
+- **[Parameter Reference](https://github.com/UnisonaiOrg/UnisonAI/blob/main/docs/README.md#parameter-reference-tables)** - Complete parameter documentation
 
 ### 💡 **Examples & Tutorials**
-- **[Basic Examples](https://github.com/UnisonAIInc/UnisonAI/blob/main/examples/basic_agent.py)** - Simple agent patterns
-- **[Advanced Examples](https://github.com/UnisonAIInc/UnisonAI/blob/main/examples/clan-agent_example.py)** - Multi-agent coordination
-- **[Tool Examples](https://github.com/UnisonAIInc/UnisonAI/blob/main/examples/tool_example.py)** - Custom tool implementations
-- **[MCP Examples](https://github.com/UnisonAIInc/UnisonAI/blob/main/examples/mcp_example.py)** - External tool integration
+- **[Basic Examples](https://github.com/UnisonaiOrg/UnisonAI/blob/main/examples/basic_agent.py)** - Simple agent patterns
+- **[Advanced Examples](https://github.com/UnisonaiOrg/UnisonAI/blob/main/examples/clan-agent_example.py)** - Multi-agent coordination
+- **[Tool Examples](https://github.com/UnisonaiOrg/UnisonAI/blob/main/examples/tool_example.py)** - Custom tool implementations
+- **[MCP Examples](https://github.com/UnisonaiOrg/UnisonAI/blob/main/examples/mcp_example.py)** - External tool integration
 
 ---
 
-## ❓ FAQ
+## FAQ
 
 <details>
 <summary><b>What is UnisonAI?</b></summary>
@@ -258,12 +262,12 @@ Use config system, environment variables, or pass directly to LLMs.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-PRs and issues welcome! See our [Contributing Guide](https://github.com/UnisonAIInc/UnisonAI/issues).
+PRs and issues welcome! See our [Contributing Guide](https://github.com/UnisonaiOrg/UnisonAI/issues).
 
-<a href="https://github.com/UnisonAIInc/UnisonAI/issues">Open Issues</a> •
-<a href="https://github.com/UnisonAIInc/UnisonAI/pulls">Submit PRs</a> •
-<a href="https://github.com/UnisonAIInc/UnisonAI">Suggest Features</a>
+<a href="https://github.com/UnisonaiOrg/UnisonAI/issues">Open Issues</a> •
+<a href="https://github.com/UnisonaiOrg/UnisonAI/pulls">Submit PRs</a> •
+<a href="https://github.com/UnisonaiOrg/UnisonAI">Suggest Features</a>
 
 ---
