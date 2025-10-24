@@ -70,22 +70,22 @@ UnisonAI stands out with its unique **Agent-to-Agent (A2A) communication** archi
 ### A2A Communication Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                    Agent-to-Agent (A2A) Communication           │
-├─────────────────────────────────────────────────────────────────┤
+┌───────────────────────────────────────────────────────────────────────┐
+│                    Agent-to-Agent (A2A) Communication                 │
+├───────────────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  Message  ┌─────────────┐  Message  ┌─────────────┐  │
-│  │   Agent 1   │◄─────────┤   Agent 2   │◄─────────┤   Agent 3   │  │
-│  │             │ Channel  │             │ Channel  │             │  │
-│  │ • Research  │─────────►│ • Analysis  │─────────►│ • Reporting │  │
-│  │ • Planning  │          │ • Synthesis │          │ • Delivery  │  │
+│  │   Agent 1   │◄──────────┤   Agent 2   │◄──────────┤   Agent 3   │  │
+│  │             │ Channel   │             │ Channel   │             │  │
+│  │ • Research  │──────────►│ • Analysis  │──────────►│ • Reporting │  │
+│  │ • Planning  │           │ • Synthesis │           │ • Delivery  │  │
 │  └─────────────┘           └─────────────┘           └─────────────┘  │
-│         │                        │                        │         │
-│         ▼                        ▼                        ▼         │
+│         │                        │                        │           │
+│         ▼                        ▼                        ▼           │
 │  ┌─────────────┐           ┌─────────────┐           ┌─────────────┐  │
 │  │   Single    │           │    Clan     │           │   Tool      │  │
 │  │   Agent     │           │ Management  │           │  System     │  │
 │  └─────────────┘           └─────────────┘           └─────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
+└───────────────────────────────────────────────────────────────────────┘
 ```
 <div>
   <img src="https://github.com/UnisonaiOrg/UnisonAI/blob/main/assets/Example.jpg" alt="Example" width="60%"/>
@@ -258,3 +258,4 @@ PRs and issues welcome! See our [Contributing Guide](https://github.com/Unisonai
 <a href="https://github.com/UnisonaiOrg/UnisonAI">Suggest Features</a>
 
 ---
+
