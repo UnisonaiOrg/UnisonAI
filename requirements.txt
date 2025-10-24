@@ -22,9 +22,3 @@ nest-asyncio>=1.6.0
 rich>=13.7.0
 colorama>=0.4.6
 
-# Model Context Protocol
-mcp>=1.0.0
-
-# Optional: Remove if not needed
-# googlesearch-python  # Redundant with duckduckgo-search
-

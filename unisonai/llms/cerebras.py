@@ -7,7 +7,7 @@ from unisonai.config import config
 
 load_dotenv()
 
-class Cerebras:
+class CerebrasLLM:
     USER = "user"
     MODEL = "model"
     SYSTEM = "System"

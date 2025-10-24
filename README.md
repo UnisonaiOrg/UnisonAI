@@ -33,8 +33,8 @@
 
 UnisonAI is a flexible and extensible Python framework for building, coordinating, and scaling multiple AI agents—each powered by the LLM of your choice.
 
-- **Single_Agent:** For solo, focused tasks.
-- **Agent (as part of a Clan):** For teamwork, coordination, and distributed problem-solving.
+- **Agent:** For solo, focused tasks or as part of a clan for teamwork.
+- **Clan:** For coordination and distributed problem-solving with multiple agents.
 - **Tool System:** Easily augment agents with custom, pluggable tools (web search, time, APIs, your own logic).
 
 Supports Cohere, Mixtral, Groq, Gemini, Grok, OpenAI, Anthropic, HelpingAI, and any custom model (just extend `BaseLLM`). UnisonAI is designed for real-world, production-grade multi-agent AI applications.
@@ -48,12 +48,12 @@ pip install unisonai
 ```
 
 ```python
-from unisonai import Single_Agent
+from unisonai import Agent
 from unisonai.llms import Gemini
 from unisonai import config
 
 config.set_api_key("gemini", "your-api-key")
-agent = Single_Agent(
+agent = Agent(
     llm=Gemini(model="gemini-2.0-flash"),
     identity="Assistant",
     description="A helpful AI assistant"
@@ -97,7 +97,6 @@ UnisonAI stands out with its unique **Agent-to-Agent (A2A) communication** archi
 - **🔒 Strong Type Validation**: All tool parameters validated against `ToolParameterType` enum before execution
 - **🛡️ Enhanced Error Handling**: Comprehensive error catching with detailed metadata for debugging
 - **📊 Standardized Results**: All tools return `ToolResult` objects with success status and metadata
-- **🔌 MCP Integration**: Connect to external tools via Model Context Protocol servers
 
 ---
 
@@ -114,27 +113,28 @@ UnisonAI stands out with its unique **Agent-to-Agent (A2A) communication** archi
 
 | Component | Purpose | Key Features |
 |-----------|---------|--------------|
-| **Single_Agent** | Standalone agent for focused tasks | Own history, tool integration, configurable LLMs |
-| **Agent** | Clan member for team coordination | Inter-agent messaging, role-based tasks, specialized tools |
+| **Agent** | Standalone or clan member agent | Own history, tool integration, configurable LLMs, inter-agent messaging |
 | **Clan** | Multi-agent orchestration | Team management, shared goals, coordinated execution |
 | **Tool System** | Extensible capability framework | Type validation, error handling, standardized results |
-| **MCP Integration** | External tool connectivity | MCP server support, protocol translation, service integration |
 
 ---
 
 ## Usage Examples
 
-### Single Agent
+### Individual Agent
 
 ```python
-from unisonai.tools.websearch import WebSearchTool
+from unisonai import Agent
+from unisonai.llms import Gemini
+from unisonai.tools.memory import MemoryTool
 
-agent = Single_Agent(
+agent = Agent(
     llm=Gemini(model="gemini-2.0-flash"),
     identity="Research Assistant",
-    tools=[WebSearchTool]
+    description="An AI assistant with memory capabilities",
+    tools=[MemoryTool]
 )
-agent.unleash(task="Latest AI trends")
+agent.unleash(task="Store important project details")
 ```
 
 ### Multi-Agent Clan
@@ -196,17 +196,6 @@ export OPENAI_API_KEY="your-key"
 llm = Gemini(api_key="your-key")
 ```
 
-### MCP Servers
-
-```python
-MCP_CONFIG = {
-    "mcpServers": {
-        "time": {"command": "uvx", "args": ["mcp-server-time"]},
-        "fetch": {"command": "uvx", "args": ["mcp-server-fetch"]}
-    }
-}
-```
-
 ---
 
 ## Documentation Hub
@@ -222,14 +211,12 @@ MCP_CONFIG = {
 
 ### 🛠️ **Advanced Features**
 - **[Tool System Guide](https://github.com/UnisonaiOrg/UnisonAI/blob/main/docs/tools-guide.md)** - Custom tool creation and validation
-- **[MCP Integration](https://github.com/UnisonaiOrg/UnisonAI/blob/main/docs/mcp-integration.md)** - External tool integration
 - **[Parameter Reference](https://github.com/UnisonaiOrg/UnisonAI/blob/main/docs/README.md#parameter-reference-tables)** - Complete parameter documentation
 
 ### 💡 **Examples & Tutorials**
 - **[Basic Examples](https://github.com/UnisonaiOrg/UnisonAI/blob/main/examples/basic_agent.py)** - Simple agent patterns
 - **[Advanced Examples](https://github.com/UnisonaiOrg/UnisonAI/blob/main/examples/clan-agent_example.py)** - Multi-agent coordination
 - **[Tool Examples](https://github.com/UnisonaiOrg/UnisonAI/blob/main/examples/tool_example.py)** - Custom tool implementations
-- **[MCP Examples](https://github.com/UnisonaiOrg/UnisonAI/blob/main/examples/mcp_example.py)** - External tool integration
 
 ---
 

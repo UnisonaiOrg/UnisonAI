@@ -7,7 +7,7 @@ with strong type validation, error handling, and standardized results.
 
 from unisonai.tools.tool import BaseTool, Field, ToolResult
 from unisonai.tools.types import ToolParameterType
-from unisonai import Single_Agent
+from unisonai import Agent
 from unisonai.llms import Gemini
 from unisonai import config
 import json
@@ -239,7 +239,7 @@ def create_enhanced_agent_example():
         # Uncomment and add your API key to test with an actual agent
         # config.set_api_key("gemini", "your-api-key-here")
         
-        agent = Single_Agent(
+        agent = Agent(
             llm=Gemini(model="gemini-2.0-flash"),
             identity="Data Analysis Assistant",
             description="AI assistant with enhanced data and text analysis capabilities",

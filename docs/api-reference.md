@@ -2,9 +2,9 @@
 
 ## Core Classes
 
-### Single_Agent
+### Agent
 
-Standalone agent for independent tasks.
+Unified agent class for both standalone tasks and clan membership.
 
 #### Constructor Parameters
 
@@ -13,10 +13,11 @@ Standalone agent for independent tasks.
 | `llm` | BaseLLM | LLM provider instance | **Required** |
 | `identity` | str | Agent's unique identifier | **Required** |
 | `description` | str | Agent's purpose and capabilities | **Required** |
+| `task` | str | Agent's core objective (optional for standalone) | `""` |
 | `verbose` | bool | Enable verbose logging | `True` |
 | `tools` | list | List of tool classes or instances | `[]` |
 | `output_file` | str | Path for output file | `None` |
-| `history_folder` | str | Directory for conversation history | `"history"` |
+| `history_folder` | str | Directory for conversation history | `None` |
 
 #### Methods
 
@@ -28,37 +29,20 @@ Execute a task using the agent.
 - `task` (str): The task description to execute
 
 **Behavior:**
-- Loads conversation history if available
-- Configures LLM with appropriate system prompt
-- Executes the task and saves conversation history
+- In standalone mode: Loads history, executes task independently
+- In clan mode: Coordinates with other clan members via inter-agent messaging
+- Configures LLM with appropriate system prompt based on context
+- Saves conversation history
 
----
+##### `send_message(agent_name: str, message: str, additional_resource: str = None, sender: str = None)`
 
-### Agent
+Send a message to another agent in the clan.
 
-Multi-agent clan member with specialized capabilities.
-
-#### Constructor Parameters
-
-| Parameter | Type | Description | Default |
-|-----------|------|-------------|---------|
-| `llm` | BaseLLM | LLM provider instance | **Required** |
-| `identity` | str | Agent's unique identifier | **Required** |
-| `description` | str | Agent's responsibilities | **Required** |
-| `task` | str | Agent's core objective | **Required** |
-| `verbose` | bool | Enable verbose logging | `True` |
-| `tools` | list | List of tool classes or instances | `[]` |
-
-#### Methods
-
-##### `unleash()`
-
-Execute the agent's assigned task within a clan context.
-
-**Behavior:**
-- Coordinates with other clan members
-- Uses inter-agent messaging for collaboration
-- Contributes to shared clan objectives
+**Parameters:**
+- `agent_name` (str): Name of the target agent
+- `message` (str): Message content
+- `additional_resource` (str, optional): Additional context or resources
+- `sender` (str, optional): Name of the sending agent
 
 ---
 
@@ -273,60 +257,6 @@ Set API key for specified provider.
 **Behavior:**
 - Stores key in `~/.unisonai/config.json`
 - Makes key available for LLM initialization
-
----
-
-## MCP Integration
-
-### MCPManager
-
-Model Context Protocol server management.
-
-#### Methods
-
-##### `init_config(config: dict) -> list`
-
-Initialize MCP servers and return available tools.
-
-**Parameters:**
-- `config` (dict): MCP server configuration
-
-**Returns:**
-- List of MCPTool instances
-
-#### Configuration Format
-
-```python
-{
-    "mcpServers": {
-        "server_name": {
-            "command": "server_command",
-            "args": ["arg1", "arg2"],
-            "env": {"ENV_VAR": "value"}  # Optional
-        }
-    }
-}
-```
-
----
-
-## Error Classes
-
-### MCPError
-
-Base exception for MCP-related errors.
-
-### MCPConnectionError
-
-Raised when MCP server connection fails.
-
-### MCPToolExecutionError
-
-Raised when MCP tool execution fails.
-
-### MCPConfigurationError
-
-Raised when MCP configuration is invalid.
 
 ---
 

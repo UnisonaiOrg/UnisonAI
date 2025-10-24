@@ -3,7 +3,6 @@ from unisonai import Agent
 from unisonai import Clan
 from unisonai.tools.tool import BaseTool, Field
 from unisonai.tools.types import ToolParameterType
-from unisonai.tools.websearch import WebSearchTool
 from unisonai.llms import Gemini
 from unisonai import config
 
@@ -291,12 +290,12 @@ time_agent = Agent(
     tools=[TimeTool()]
 )
 
-web_agent = Agent(
+research_agent = Agent(
     llm=Gemini(model="gemini-2.0-flash"),
     identity="Research Specialist",
-    description="Expert web researcher for travel information and real-time data",
-    task="Gather comprehensive travel information, cultural activities, and current pricing",
-    tools=[WebSearchTool()]
+    description="Expert researcher for information gathering and analysis",
+    task="Gather comprehensive information and provide detailed analysis",
+    tools=[TimeTool()]
 )
 
 weather_agent = Agent(
@@ -328,7 +327,7 @@ food_agent = Agent(
     identity="Culinary Guide",
     description="Food specialist focusing on local cuisine and budget-friendly dining options",
     task="Recommend authentic local foods, restaurants, and budget-friendly meal planning",
-    tools=[WebSearchTool()]
+    tools=[TimeTool()]
 )
 
 planner_agent = Agent(
@@ -342,7 +341,7 @@ planner_agent = Agent(
 # Create the Enhanced Clan with improved coordination
 clan = Clan(
     manager=planner_agent,
-    members=[time_agent, web_agent, weather_agent, budget_agent, transport_agent, food_agent, planner_agent],
+    members=[time_agent, research_agent, weather_agent, budget_agent, transport_agent, food_agent, planner_agent],
     shared_instruction="""You are part of an elite Trip Planning team with enhanced tools and capabilities. 
 
 IMPORTANT INSTRUCTIONS:

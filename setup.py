@@ -23,7 +23,7 @@ setup(
     long_description_content_type="text/markdown",
     long_description=long_description,
     packages=find_packages(),
-    install_requires=['cohere', 'groq', 'rich', 'python-dotenv', 'google-generativeai', 'requests', 'colorama', 'googlesearch-python', 'anthropic', "openai>=1.13.3", 'mistralai', "pydantic>=2.4.2", "nest_asyncio", "mcp>=1.0.0", "duckduckgo-search"],
+    install_requires=['cohere', 'groq', 'rich', 'python-dotenv', 'google-generativeai', 'requests', 'colorama', 'anthropic', "openai>=1.13.3", 'mistralai', "pydantic>=2.4.2", "nest_asyncio"],
     keywords=['agents', 'unisonai', 'unisonAI', 'multi-agent', 'clan', 'python', 'light-weight', 'agent-framework', 'framework', 'ai', 'ai tools', 'ai agents', 'llms', 'open-source', 'a2a', 'agent to agent'],
     classifiers=[
         "Development Status :: 4 - Beta",

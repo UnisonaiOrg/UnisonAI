@@ -7,7 +7,6 @@ working together as a clan to accomplish complex tasks.
 
 from unisonai import Agent, Clan
 from unisonai.llms import Gemini
-from unisonai.tools.websearch import WebSearchTool
 from unisonai.tools.tool import BaseTool, Field
 from unisonai.tools.types import ToolParameterType
 from unisonai import config
@@ -46,7 +45,7 @@ class ResearchTool(BaseTool):
     def _run(self, topic: str, depth: str = "detailed", sources: int = 5) -> dict:
         """Conduct research on the specified topic."""
 
-        # Simulate research results (in real implementation, this would use WebSearchTool)
+        # Simulate research results
         research_findings = {
             "topic": topic,
             "depth": depth,
@@ -193,7 +192,7 @@ def create_research_clan():
         identity="Senior Researcher",
         description="Expert researcher specializing in comprehensive information gathering and analysis",
         task="Conduct thorough research on assigned topics using available tools and methodologies",
-        tools=[WebSearchTool, ResearchTool],
+        tools=[ResearchTool],
         verbose=True
     )
 

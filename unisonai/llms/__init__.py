@@ -6,4 +6,4 @@ from ..llms.anthropicllm import Anthropic
 from ..llms.xai import XAILLM
 from ..llms.mixtral import Mixtral
 from ..llms.helpingaillm import HelpingAI
-from ..llms.cerebras import Cerebras
+from ..llms.cerebras import CerebrasLLM

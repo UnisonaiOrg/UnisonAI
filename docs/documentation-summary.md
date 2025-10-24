@@ -13,17 +13,15 @@ This comprehensive documentation provides everything you need to master UnisonAI
 | **[architecture.md](./architecture.md)** | System design and architecture | Component diagrams, data flow |
 | **[usage-guide.md](./usage-guide.md)** | Practical usage patterns | Best practices, examples, troubleshooting |
 | **[tools-guide.md](./tools-guide.md)** | Tool development guide | Custom tools, validation, patterns |
-| **[mcp-integration.md](./mcp-integration.md)** | External service integration | MCP servers, configuration, examples |
 | **[quick-start.md](./quick-start.md)** | Fast-track guide | 2-15 minute setup guides |
 
 ### 💻 Code Examples
 
 | Example File | Description | Key Learning |
 |-------------|-------------|--------------|
-| **[basic_agent.py](./examples/basic_agent.py)** | Simple single agent setup | Basic agent creation and usage |
+| **[basic_agent.py](./examples/basic_agent.py)** | Simple agent setup | Basic agent creation and usage |
 | **[advanced_tools.py](./examples/advanced_tools.py)** | Sophisticated tool development | Complex tools, validation, error handling |
 | **[clan_coordination.py](./examples/clan_coordination.py)** | Multi-agent coordination | Clan setup, agent specialization, teamwork |
-| **[mcp_integration.py](./examples/mcp_integration.py)** | External service integration | MCP servers, external APIs, service connection |
 
 ## 🎯 Learning Paths
 
@@ -42,23 +40,20 @@ This comprehensive documentation provides everything you need to master UnisonAI
 4. **Implement [clan_coordination.py](./examples/clan_coordination.py)** (30 minutes)
 5. **Build your own custom tools** (30-60 minutes)
 
-### 🔧 Advanced Path (4-8 hours)
+### 🔧 Advanced Path (2-4 hours)
 
-1. **Master [MCP Integration](./mcp-integration.md)** (60 minutes)
-2. **Set up external service connections** (60-90 minutes)
-3. **Implement [mcp_integration.py](./examples/mcp_integration.py)** (45 minutes)
-4. **Create production-ready agent systems** (90-120 minutes)
-5. **Deploy and monitor your agents** (60 minutes)
+1. **Master complex clan coordination patterns** (60 minutes)
+2. **Build production-ready agent systems** (60-90 minutes)
+3. **Implement advanced tool integrations** (45 minutes)
+4. **Create custom LLM integrations** (30-60 minutes)
 
 ## 🔍 Key Concepts
 
 ### Core Architecture
 
-- **Single_Agent**: Standalone agents for focused tasks
-- **Agent**: Multi-agent clan members with specialized roles
+- **Agent**: Unified agent class for standalone tasks or clan membership
 - **Clan**: Coordinated teams of agents working together
 - **Tool System**: Extensible framework for agent capabilities
-- **MCP Integration**: Connection to external services and APIs
 
 ### Design Principles
 
@@ -73,9 +68,9 @@ This comprehensive documentation provides everything you need to master UnisonAI
 ### 1. Research Assistant
 ```python
 # Intelligent research and analysis
-research_agent = Single_Agent(
+research_agent = Agent(
     llm=Gemini(),
-    tools=[WebSearchTool, CalculatorTool],
+    tools=[RAGTool, CalculatorTool],
     identity="Research Expert"
 )
 ```
@@ -93,7 +88,7 @@ automation_clan = Clan(
 ### 3. Data Analysis
 ```python
 # Statistical analysis and insights
-analysis_agent = Single_Agent(
+analysis_agent = Agent(
     llm=Gemini(),
     tools=[DataAnalysisTool, VisualizationTool],
     identity="Data Scientist"
@@ -174,7 +169,6 @@ content_clan = Clan(
 | API Key Errors | Invalid or missing keys | Check key configuration and validity |
 | Tool Failures | Parameter validation issues | Review tool parameter definitions |
 | Agent Not Responding | LLM provider issues | Verify API connectivity and quotas |
-| MCP Connection Issues | Server not running | Check MCP server installation and status |
 | Memory Issues | Large histories or datasets | Implement history cleanup and limits |
 
 ### Debug Mode
@@ -182,7 +176,7 @@ content_clan = Clan(
 Enable verbose logging for detailed troubleshooting:
 
 ```python
-agent = Single_Agent(
+agent = Agent(
     llm=your_llm,
     verbose=True,  # Enable debug logging
     # ... other parameters
@@ -202,7 +196,6 @@ agent = Single_Agent(
 - **Contributing**: Guidelines for contributing to UnisonAI
 
 ### Additional Resources
-- **MCP Specification**: https://github.com/modelcontextprotocol/specification
 - **LLM Provider Documentation**: Check individual provider docs
 - **Best Practices**: See usage guidelines in [usage-guide.md](./usage-guide.md)
 

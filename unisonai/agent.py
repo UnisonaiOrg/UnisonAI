@@ -2,15 +2,16 @@ import sys  # Added for exiting the process smoothly
 from unisonai.llms import Gemini
 from unisonai.prompts.agent import AGENT_PROMPT
 from unisonai.prompts.manager import MANAGER_PROMPT
+from unisonai.prompts.individual import INDIVIDUAL_PROMPT
 from unisonai.async_helper import run_async_from_sync, run_sync_in_executor
 import inspect
 import re
-import yaml
 import colorama
 from colorama import Fore, Style
 from typing import Any
 import json
 import difflib  # For fuzzy string matching
+import os  # For directory operations
 colorama.init(autoreset=True)
 
 
@@ -38,25 +39,38 @@ class Agent:
                  llm: Gemini,
                  identity: str,  # Name of the agent
                  description: str,  # Description of the agent
-                 task: str,  # A Base Example Task According to agents's work
+                 task: str = "",  # A Base Example Task According to agent's work (optional for single agents)
                  verbose: bool = True,
-                 tools: list[Any] = []):
+                 tools: list[Any] = [],
+                 output_file: str = None,  # For single agent mode
+                 history_folder: str = None):  # For both modes, defaults to "." for clan, "history" for single
         self.llm = llm
         self.identity = identity
         self.description = description
         self.task = task
         self.plan = None
-        self.history_folder = None  # Renamed for consistency
+        self.output_file = output_file
+        self.clan_connected = False  # Default: standalone mode
+        
+        # Set history folder based on mode
+        if history_folder is None:
+            self.history_folder = "."  # Will be overridden by clan or used as "history" in single mode
+        else:
+            self.history_folder = history_folder
+            
         self.rawtools = tools
         self.tools = create_tools(tools)
-        self.ask_user = False
+        self.ask_user = False  # Will be set to True by clan for manager
         self.user_task = None
         self.shared_instruction = None
         self.rawmembers = []
         self.members = ""
         self.clan_name = ""
-        self.output_file = None
         self.verbose = verbose
+        
+        # Create history folder for single agent mode
+        if not self.clan_connected and self.history_folder != ".":
+            os.makedirs(self.history_folder, exist_ok=True)
 
     def _parse_and_fix_json(self, json_str: str):
         """Parses JSON string and attempts to fix common errors."""
@@ -101,9 +115,8 @@ class Agent:
         matched_agent_name = self._get_agent_by_name(agent_name)
         if matched_agent_name != agent_name and self.verbose:
             print(
-                f"{Fore.YELLOW}Note: Agent name '{agent_name}' was matched to '{matched_agent_name}'")
-        print(Fore.LIGHTCYAN_EX +
-              f"Status: Sending message to {matched_agent_name}" + Style.RESET_ALL)
+                f"{Fore.YELLOW}📌 Note: Agent name '{agent_name}' was matched to '{matched_agent_name}'{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTCYAN_EX}📨 Status: Sending message to {matched_agent_name}{Style.RESET_ALL}")
         msg = f"""MESSAGE FROM: {sender}\nMESSAGE TO: {matched_agent_name}\n\n{message}\n\nADDITIONAL RESOURCE:\n{additional_resource}"""
         is_manager_message = matched_agent_name in [
             "CEO/Manager", "Manager", "CEO"]
@@ -124,22 +137,25 @@ class Agent:
                 return json.loads(params_data)
             except json.JSONDecodeError as e:
                 print(f"{Fore.YELLOW}JSON parsing error: {e}")
-                try:
-                    parsed = yaml.safe_load(params_data)
-                    if isinstance(parsed, dict):
-                        return parsed
-                    else:
-                        return {"value": parsed}
-                except yaml.YAMLError:
-                    print(f"{Fore.RED}YAML parsing failed; returning raw text")
-                    return {"raw_input": params_data}
+                return {"raw_input": params_data}
         elif params_data is None:
             return {}
         return params_data
 
     def unleash(self, task: str):
-        # Use history_folder if set; if not, default to current directory
-        folder = self.history_folder if self.history_folder is not None else "."
+        self.user_task = task
+        
+        # Determine folder based on mode
+        if self.clan_connected:
+            # Clan mode: use history_folder or default to "."
+            folder = self.history_folder if self.history_folder is not None else "."
+        else:
+            # Single agent mode: use history_folder or default to "history"
+            if self.history_folder == ".":
+                self.history_folder = "history"
+                os.makedirs(self.history_folder, exist_ok=True)
+            folder = self.history_folder
+            
         try:
             with open(f"{folder}/{self.identity}.json", "r", encoding="utf-8") as f:
                 history = f.read()
@@ -148,70 +164,108 @@ class Agent:
             open(f"{folder}/{self.identity}.json",
                  "w", encoding="utf-8").close()
             self.messages = []
+            
         self.llm.reset()
-        if self.tools:
-            if self.ask_user:
-                self.llm.__init__(
-                    messages=self.messages,
-                    system_prompt=MANAGER_PROMPT.format(
-                        members=self.members,
-                        shared_instruction=self.shared_instruction,
-                        identity=self.identity,
-                        description=self.description,
-                        task=self.task,
-                        user_task=task,
-                        tools=self.tools,
-                        plan=self.plan,
-                        clan_name=self.clan_name
+        
+        # Choose prompt based on mode
+        if self.clan_connected:
+            # Clan mode: use AGENT_PROMPT or MANAGER_PROMPT
+            if self.tools:
+                if self.ask_user:
+                    self.llm.__init__(
+                        messages=self.messages,
+                        system_prompt=MANAGER_PROMPT.format(
+                            members=self.members,
+                            shared_instruction=self.shared_instruction,
+                            identity=self.identity,
+                            description=self.description,
+                            task=self.task,
+                            user_task=task,
+                            tools=self.tools,
+                            plan=self.plan,
+                            clan_name=self.clan_name
+                        )
                     )
-                )
+                else:
+                    self.llm.__init__(
+                        messages=self.messages,
+                        system_prompt=AGENT_PROMPT.format(
+                            identity=self.identity,
+                            description=self.description,
+                            task=self.task,
+                            tools=self.tools,
+                            user_task=task,
+                            shared_instruction=self.shared_instruction,
+                            members=self.members,
+                            plan=self.plan,
+                            clan_name=self.clan_name
+                        )
+                    )
             else:
-                self.llm.__init__(
-                    messages=self.messages,
-                    system_prompt=AGENT_PROMPT.format(
-                        identity=self.identity,
-                        description=self.description,
-                        task=self.task,
-                        tools=self.tools,
-                        user_task=task,
-                        shared_instruction=self.shared_instruction,
-                        members=self.members,
-                        plan=self.plan,
-                        clan_name=self.clan_name
+                if self.ask_user:
+                    self.llm.__init__(
+                        messages=self.messages,
+                        system_prompt=MANAGER_PROMPT.format(
+                            members=self.members,
+                            shared_instruction=self.shared_instruction,
+                            identity=self.identity,
+                            description=self.description,
+                            task=self.task,
+                            user_task=task,
+                            plan=self.plan,
+                            tools="No Provided Tools",
+                            clan_name=self.clan_name
+                        )
                     )
-                )
+                else:
+                    self.llm.__init__(
+                        messages=self.messages,
+                        system_prompt=AGENT_PROMPT.format(
+                            identity=self.identity,
+                            description=self.description,
+                            task=self.task,
+                            tools="No Provided Tools",
+                            plan=self.plan,
+                            user_task=task,
+                            shared_instruction=self.shared_instruction,
+                            members=self.members,
+                            clan_name=self.clan_name
+                        )
+                    )
         else:
-            if self.ask_user:
+            # Single agent mode: use INDIVIDUAL_PROMPT
+            if self.tools:
                 self.llm.__init__(
                     messages=self.messages,
-                    system_prompt=MANAGER_PROMPT.format(
-                        members=self.members,
-                        shared_instruction=self.shared_instruction,
+                    model=self.llm.model,  # Preserve the model
+                    temperature=self.llm.temperature,  # Preserve temperature
+                    system_prompt=INDIVIDUAL_PROMPT.format(
                         identity=self.identity,
                         description=self.description,
-                        task=self.task,
-                        user_task=task,
-                        plan=self.plan,
-                        tools="No Provided Tools",
-                        clan_name=self.clan_name
-                    )
+                        user_task=self.user_task,
+                        tools=self.tools,
+                    ),
+                    max_tokens=self.llm.max_tokens,  # Preserve max_tokens
+                    verbose=self.llm.verbose,  # Preserve verbose
+                    api_key=self.llm.client.api_key if hasattr(self.llm, 'client') and hasattr(self.llm.client, 'api_key') else None
                 )
             else:
                 self.llm.__init__(
                     messages=self.messages,
-                    system_prompt=AGENT_PROMPT.format(
+                    model=self.llm.model,  # Preserve the model
+                    temperature=self.llm.temperature,  # Preserve temperature
+                    system_prompt=INDIVIDUAL_PROMPT.format(
                         identity=self.identity,
                         description=self.description,
-                        task=self.task,
+                        user_task=self.user_task,
                         tools="No Provided Tools",
-                        plan=self.plan,
-                        user_task=task,
-                        shared_instruction=self.shared_instruction,
-                        members=self.members,
-                        clan_name=self.clan_name
-                    )
+                    ),
+                    max_tokens=self.llm.max_tokens,  # Preserve max_tokens
+                    verbose=self.llm.verbose,  # Preserve verbose
+                    api_key=self.llm.client.api_key if hasattr(self.llm, 'client') and hasattr(self.llm.client, 'api_key') else None
                 )
-        print(Fore.LIGHTCYAN_EX + "Status: Evaluating Task...\n")
+                
+        print(f"{Fore.LIGHTCYAN_EX}🔄 Status: Evaluating Task...{Style.RESET_ALL}\n")
         response = self.llm.run(task, save_messages=True)
         try:
             with open(f"{folder}/{self.identity}.json", "w", encoding="utf-8") as f:
@@ -219,50 +273,85 @@ class Agent:
         except Exception as e:
             print(e)
         if self.verbose:
-            print("Response:")
+            print(f"{Fore.LIGHTWHITE_EX}Response:")
             print(response)
-        yaml_blocks = re.findall(r"```yml(.*?)```", response, flags=re.DOTALL)
-        if not yaml_blocks:
-            yaml_blocks = re.findall(
-                r"```yaml(.*?)```", response, flags=re.DOTALL)
-        if not yaml_blocks:
+        
+        # Extract JSON blocks from response
+        json_blocks = re.findall(r"```json(.*?)```", response, flags=re.DOTALL)
+        if not json_blocks:
             return response
-        yaml_content = yaml_blocks[0].strip()
+        
+        json_content = json_blocks[0].strip()
         try:
-            data = yaml.safe_load(yaml_content)
-        except yaml.YAMLError as e:
-            print(f"{Fore.RED}Error parsing YAML: {e}")
+            data = json.loads(json_content)
+        except json.JSONDecodeError as e:
+            print(f"{Fore.RED}❌ Error parsing JSON: {e}{Style.RESET_ALL}")
             return response
-        if "thoughts" in data and "name" in data and "params" in data:
+
+        # Handle new JSON structure: {"thoughts": {...}, "action": {"tool_name": "...", "parameters": {...}}, "verification": "..."}
+        if "thoughts" in data and "action" in data:
             thoughts = data["thoughts"]
-            name = data["name"]
-            params_raw = data["params"]
-            params = self._ensure_dict_params(params_raw)
-            if len(thoughts) > 150:
-                thoughts = f"{thoughts[:120]}..."
-            print(f"{Fore.MAGENTA}Thoughts: {thoughts}\n{Fore.GREEN}Using Tool ({name})\n{Fore.LIGHTYELLOW_EX}Params: {params}")
+            action = data["action"]
+            verification = data.get("verification", "No verification specified")
+            
+            # Extract tool name and parameters from action
+            name = action.get("tool_name", "")
+            params = action.get("parameters", {})
+            
+            # Display thoughts information with colors
+            print(f"\n{Fore.CYAN}{'='*60}{Style.RESET_ALL}")
+            print(f"{Fore.MAGENTA}🧠 THOUGHTS:{Style.RESET_ALL}")
+            if isinstance(thoughts, dict):
+                if self.clan_connected:
+                    # Clan mode: show plan_step, evidence, validation, dependencies, failure_modes
+                    print(f"  {Fore.LIGHTBLUE_EX}📍 Plan Step: {thoughts.get('plan_step', 'N/A')}{Style.RESET_ALL}")
+                    print(f"  {Fore.LIGHTGREEN_EX}📊 Evidence: {thoughts.get('evidence', 'N/A')}{Style.RESET_ALL}")
+                    print(f"  {Fore.LIGHTMAGENTA_EX}✓ Validation: {thoughts.get('validation', 'N/A')}{Style.RESET_ALL}")
+                    print(f"  {Fore.LIGHTYELLOW_EX}🔗 Dependencies: {thoughts.get('dependencies', [])}{Style.RESET_ALL}")
+                    print(f"  {Fore.LIGHTRED_EX}⚠ Failure Modes: {thoughts.get('failure_modes', 'N/A')}{Style.RESET_ALL}")
+                else:
+                    # Single agent mode: show goal, context, evidence, validation, fallback
+                    print(f"  {Fore.LIGHTBLUE_EX}🎯 Goal: {thoughts.get('goal', 'N/A')}{Style.RESET_ALL}")
+                    print(f"  {Fore.LIGHTCYAN_EX}📋 Context: {thoughts.get('context', 'N/A')}{Style.RESET_ALL}")
+                    print(f"  {Fore.LIGHTGREEN_EX}📊 Evidence: {thoughts.get('evidence', 'N/A')}{Style.RESET_ALL}")
+                    print(f"  {Fore.LIGHTMAGENTA_EX}✓ Validation: {thoughts.get('validation', 'N/A')}{Style.RESET_ALL}")
+                    print(f"  {Fore.LIGHTYELLOW_EX}🔄 Fallback: {thoughts.get('fallback', 'N/A')}{Style.RESET_ALL}")
+            else:
+                thoughts_str = str(thoughts)
+                if len(thoughts_str) > 150:
+                    thoughts_str = f"{thoughts_str[:120]}..."
+                print(f"  {thoughts_str}")
+            
+            print(f"\n{Fore.GREEN}🛠 ACTION:{Style.RESET_ALL}")
+            print(f"  {Fore.LIGHTGREEN_EX}Tool: {name}{Style.RESET_ALL}")
+            print(f"  {Fore.LIGHTYELLOW_EX}Parameters: {json.dumps(params, indent=2)}{Style.RESET_ALL}")
+            
+            print(f"\n{Fore.LIGHTCYAN_EX}✅ VERIFICATION:{Style.RESET_ALL}")
+            print(f"  {verification}")
+            print(f"{Fore.CYAN}{'='*60}{Style.RESET_ALL}\n")
+            
             if name == "send_message":
                 if isinstance(params, dict) and "agent_name" in params and "message" in params:
                     self.send_message(params["agent_name"], params["message"], params.get(
                         "additional_resource"), sender=self.identity)
                 else:
                     print(
-                        f"{Fore.RED}Error: Missing required parameters for send_message tool. Need 'agent_name' and 'message'.")
-                    print(f"{Fore.RED}Available params: {params}")
+                        f"{Fore.RED}❌ Error: Missing required parameters for send_message tool. Need 'agent_name' and 'message'.{Style.RESET_ALL}")
+                    print(f"{Fore.RED}Available params: {params}{Style.RESET_ALL}")
             elif name == "ask_user":
                 if isinstance(params, dict) and "question" in params:
-                    print("QUESTION: " + params["question"])
+                    print(f"{Fore.LIGHTYELLOW_EX}❓ QUESTION: {params['question']}{Style.RESET_ALL}")
                     self.unleash(input("You: "))
                 else:
                     question = str(
                         params) if params else "What would you like to say?"
-                    print("QUESTION: " + question)
+                    print(f"{Fore.LIGHTYELLOW_EX}❓ QUESTION: {question}{Style.RESET_ALL}")
                     self.unleash(input("You: "))
             elif name == "pass_result":
                 if isinstance(params, dict) and "result" in params:
-                    print("RESULT: " + str(params["result"]))
+                    print(f"{Fore.LIGHTGREEN_EX}✅ RESULT: {str(params['result'])}{Style.RESET_ALL}")
                 else:
-                    print("RESULT: " + str(params))
+                    print(f"{Fore.LIGHTGREEN_EX}✅ RESULT: {str(params)}{Style.RESET_ALL}")
                 while True:
                     decision = input(
                         "Does this result meet your requirements? (y/n): ")
@@ -290,7 +379,7 @@ class Agent:
                             bound_run_method = tool_instance._run
                             is_async = inspect.iscoroutinefunction(bound_run_method)
                             
-                            print(Fore.LIGHTCYAN_EX + f"Status: Executing Tool {'(Async)' if is_async else ''}...\n")
+                            print(f"{Fore.LIGHTCYAN_EX}⚙ Status: Executing Tool {name} {'(Async)' if is_async else '(Sync)'}...{Style.RESET_ALL}\n")
                             
                             if is_async:
                                 if isinstance(params, dict):
@@ -303,7 +392,7 @@ class Agent:
                                 else:
                                     tool_response = bound_run_method(params)
 
-                            print("Tool Response:")
+                            print(f"{Fore.LIGHTGREEN_EX}📤 Tool Response:{Style.RESET_ALL}")
                             print(tool_response)
                             self.unleash(
                                 "Here is your tool response:\n\n" + str(tool_response))
@@ -320,7 +409,7 @@ class Agent:
                                     unbound_run_method = tool_instance.__class__._run
                                     is_async_unbound = inspect.iscoroutinefunction(unbound_run_method)
 
-                                    print(Fore.LIGHTCYAN_EX + f"Status: Executing Tool (via unbound method) {'(Async)' if is_async_unbound else '(Sync via Executor)'}...\n")
+                                    print(f"{Fore.LIGHTCYAN_EX}⚙ Status: Executing Tool (via unbound method) {'(Async)' if is_async_unbound else '(Sync via Executor)'}...{Style.RESET_ALL}\n")
 
                                     if is_async_unbound:
                                         # Execute async unbound tool
@@ -335,22 +424,23 @@ class Agent:
                                         else:
                                             tool_response = run_sync_in_executor(unbound_run_method, params)
                                     
-                                    print("Tool Response:")
+                                    print(f"{Fore.LIGHTGREEN_EX}📤 Tool Response:{Style.RESET_ALL}")
                                     print(tool_response)
                                     self.unleash(
                                         "Here is your tool response:\n\n" + str(tool_response))
                                     break
                                 except Exception as inner_e:
                                     print(
-                                        f"{Fore.RED}Failed to execute tool via unbound method: {inner_e}")
+                                        f"{Fore.RED}❌ Failed to execute tool via unbound method: {inner_e}{Style.RESET_ALL}")
                             else:
                                 # It's a different TypeError, so report it as a primary error
-                                print(f"{Fore.RED}Error executing tool '{name}': {e}")
+                                print(f"{Fore.RED}❌ Error executing tool '{name}': {e}{Style.RESET_ALL}")
 
                         except Exception as e:
                             print(
-                                f"{Fore.RED}Error executing tool '{name}': {e}")
+                                f"{Fore.RED}❌ Error executing tool '{name}': {e}{Style.RESET_ALL}")
         else:
             print(
-                Fore.RED + "YAML block found, but it doesn't match the expected format.")
+                f"{Fore.RED}❌ JSON block found, but it doesn't match the expected format.{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}Expected format: {{'thoughts': {{}}, 'action': {{'tool_name': '...', 'parameters': {{}}}}, 'verification': '...'}}{Style.RESET_ALL}")
             return response

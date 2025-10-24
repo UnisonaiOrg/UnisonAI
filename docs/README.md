@@ -8,36 +8,30 @@ UnisonAI is a flexible and extensible Python framework for building, coordinatin
 
 - **🔗 Multi-LLM Support**: Compatible with Cohere, Mixtral, Groq, Gemini, Grok, OpenAI, Anthropic, HelpingAI, and custom models
 - **🛠️ Enhanced Tool System**: Strong type validation, automatic parameter validation, standardized responses
-- **🤖 Agent Types**: Single_Agent for solo tasks, Agent for team-based coordination, Clan for multi-agent orchestration
+- **🤖 Agent Types**: Agent for both solo and team-based tasks, Clan for multi-agent orchestration
 - **📚 Production-Ready**: Robust error handling, logging, and comprehensive documentation
-- **🔒 Model Context Protocol (MCP) Integration**: Connect to external tools and services via MCP servers
 
 ## Architecture
 
 ### Core Components
 
-#### 1. Single_Agent Class
-Standalone agent for independent tasks with:
+#### 1. Agent Class
+Flexible agent for standalone or clan-based tasks with:
 - Conversation history management
 - Tool integration capabilities
 - Configurable LLM providers
+- Inter-agent messaging (in clan mode)
+- Role-based task execution
 - Customizable prompts and behavior
 
-#### 2. Agent Class
-Multi-agent clan member with:
-- Inter-agent messaging capabilities
-- Role-based task execution
-- Specialized tool usage
-- Coordinated problem-solving
-
-#### 3. Clan Class
+#### 2. Clan Class
 Multi-agent orchestration with:
 - Team management and leadership
 - Shared instructions and goals
 - Coordinated task distribution
 - Unified objective achievement
 
-#### 4. Enhanced Tool System
+#### 3. Enhanced Tool System
 Robust tool framework featuring:
 - **BaseTool**: Abstract base class for custom tools
 - **Field**: Parameter definitions with type validation
@@ -50,23 +44,27 @@ Robust tool framework featuring:
 ┌─────────────────────────────────────────────────────────────────┐
 │                          UnisonAI Framework                     │
 ├─────────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐              │
-│  │ Single_Agent│  │    Agent    │  │    Clan     │              │
-│  │             │  │             │  │             │              │
-│  │ • Solo tasks│  │ • Team work │  │ • Multi-    │              │
-│  │ • History   │  │ • Messaging │  │   agent     │              │
-│  │ • Tools     │  │ • Roles     │  │   coord.    │              │
-│  └─────────────┘  └─────────────┘  └─────────────┘              │
+│  ┌─────────────┐  ┌─────────────┐                               │
+│  │    Agent    │  │    Clan     │                               │
+│  │             │  │             │                               │
+│  │ • Solo mode │  │ • Multi-    │                               │
+│  │ • Clan mode │  │   agent     │                               │
+│  │ • History   │  │   coord.    │                               │
+│  │ • Tools     │  │ • Messaging │                               │
+│  │ • Messaging │  │             │                               │
+│  └─────────────┘  └─────────────┘                               │
 ├─────────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐              │
-│  │   LLM       │  │    Tool     │  │     MCP     │              │
-│  │  Providers  │  │   System    │  │ Integration │              │
-│  │             │  │             │  │             │              │
-│  │ • OpenAI    │  │ • Type      │  │ • External  │              │
-│  │ • Gemini    │  │   validation│  │   tools     │              │
-│  │ • Anthropic │  │ • Error     │  │ • Services  │              │
-│  │ • Cohere    │  │   handling  │  │ • Protocols │              │
-│  └─────────────┘  └─────────────┘  └─────────────┘              │
+│  ┌─────────────┐  ┌─────────────┐                               │
+│  │   LLM       │  │    Tool     │                               │
+│  │  Providers  │  │   System    │                               │
+│  │             │  │             │                               │
+│  │ • OpenAI    │  │ • Type      │                               │
+│  │ • Gemini    │  │   validation│                               │
+│  │ • Anthropic │  │ • Error     │                               │
+│  │ • Cohere    │  │   handling  │                               │
+│  │ • Groq      │  │ • Memory    │                               │
+│  │ • Mixtral   │  │ • RAG       │                               │
+│  └─────────────┘  └─────────────┘                               │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -78,23 +76,23 @@ Robust tool framework featuring:
 pip install unisonai
 ```
 
-### Basic Single Agent Usage
+### Basic Agent Usage
 
 ```python
-from unisonai import Single_Agent
+from unisonai import Agent
 from unisonai.llms import Gemini
-from unisonai.tools.websearch import WebSearchTool
+from unisonai.tools.memory import MemoryTool
 from unisonai import config
 
 # Configure API key
 config.set_api_key("gemini", "your-api-key")
 
 # Create agent
-agent = Single_Agent(
+agent = Agent(
     llm=Gemini(model="gemini-2.0-flash"),
     identity="Research Assistant",
-    description="Web research and analysis expert",
-    tools=[WebSearchTool],
+    description="Research and analysis expert with memory",
+    tools=[MemoryTool],
     verbose=True
 )
 
@@ -142,7 +140,6 @@ clan.unleash()
 - **[Architecture Guide](./architecture.md)**: Detailed architecture and system design
 - **[Usage Guidelines](./usage-guide.md)**: Comprehensive usage patterns and best practices
 - **[Tool System Guide](./tools-guide.md)**: Creating and using custom tools
-- **[MCP Integration](./mcp-integration.md)**: Model Context Protocol setup and usage
 - **[Examples](./examples/)**: Practical examples and use cases
 
 ## Requirements

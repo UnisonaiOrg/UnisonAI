@@ -300,27 +300,6 @@ def _run(self, **kwargs) -> Any:
 
 ## Built-in Tools
 
-### WebSearchTool
-
-Web search capabilities with multiple search engines.
-
-```python
-from unisonai.tools.websearch import WebSearchTool
-
-# Create and use web search tool
-search_tool = WebSearchTool()
-result = search_tool.run(
-    query="latest AI developments",
-    num_results=5,
-    search_engine="duckduckgo"  # or "google"
-)
-```
-
-**Parameters:**
-- `query` (str): Search query
-- `num_results` (int): Number of results to return
-- `search_engine` (str): Search engine to use
-
 ### MemoryTool
 
 Conversation memory management.
@@ -364,33 +343,35 @@ result = rag_tool.run(
 ### Single Agent with Multiple Tools
 
 ```python
-from unisonai import Single_Agent
+from unisonai import Agent
+from unisonai.tools.memory import MemoryTool
+from unisonai.tools.rag import RAGTool
 
-agent = Single_Agent(
+agent = Agent(
     llm=Gemini(model="gemini-2.0-flash"),
     identity="Multi-Tool Assistant",
-    description="Assistant with web search, calculation, and weather capabilities",
-    tools=[WebSearchTool, CalculatorTool, WeatherTool],
+    description="Assistant with memory, document search, and calculation capabilities",
+    tools=[MemoryTool, RAGTool, CalculatorTool],
     verbose=True
 )
 
 agent.unleash(task="""
-    Search for current weather in New York,
-    then calculate the average temperature for the week,
-    and finally search for good restaurants in the area.
+    Store important project information in memory,
+    search for relevant documents in the knowledge base,
+    and calculate project budget estimates.
 """)
 ```
 
 ### Clan with Specialized Tools
 
 ```python
-# Research agent with web search
+# Research agent with RAG
 research_agent = Agent(
     llm=Gemini(model="gemini-2.0-flash"),
     identity="Researcher",
-    description="Web research specialist",
-    task="Gather information from web sources",
-    tools=[WebSearchTool],
+    description="Document research specialist",
+    task="Gather information from knowledge base",
+    tools=[RAGTool],
     verbose=True
 )
 
@@ -485,19 +466,23 @@ class CompositeTool(BaseTool):
 
         # Initialize sub-tools
         self.calculator = CalculatorTool()
-        self.search_tool = WebSearchTool()
+        self.memory_tool = MemoryTool()
 
         super().__init__()
 
     def _run(self, operation: str) -> str:
-        if operation == "search_and_calculate":
-            # Use search tool
-            search_result = self.search_tool.run(query="latest data")
-
+        if operation == "calculate_and_store":
             # Use calculator tool
             calc_result = self.calculator.run(operation="+", x=10, y=5)
 
-            return f"Search: {search_result.result}, Calc: {calc_result.result}"
+            # Store in memory
+            memory_result = self.memory_tool.run(
+                action="store", 
+                key="calculation", 
+                value=str(calc_result.result)
+            )
+
+            return f"Calculated: {calc_result.result}, Stored: {memory_result.result}"
 
         return "Unknown operation"
 ```
@@ -550,10 +535,13 @@ class APITool(BaseTool):
 
 ```python
 # Create tools
-tools = [WebSearchTool, CalculatorTool, CustomTool]
+tools = [MemoryTool, RAGTool, CustomTool]
+
+# Configure tools list
+tools = [MemoryTool, RAGTool, CalculatorTool]
 
 # Use with agent
-agent = Single_Agent(
+agent = Agent(
     llm=your_llm,
     identity="Tool-Rich Agent",
     description="Agent with multiple tool capabilities",

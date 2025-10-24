@@ -1,11 +1,11 @@
 """
-Basic Single Agent Example
+Basic Agent Example
 
 This example demonstrates how to create and use a simple UnisonAI agent
 for basic tasks like answering questions and providing explanations.
 """
 
-from unisonai import Single_Agent
+from unisonai import Agent
 from unisonai.llms import Gemini
 from unisonai import config
 
@@ -14,7 +14,7 @@ def main():
     config.set_api_key("gemini", "your-gemini-api-key")
 
     # Create a basic agent
-    agent = Single_Agent(
+    agent = Agent(
         llm=Gemini(model="gemini-2.0-flash"),
         identity="Basic Assistant",
         description="A helpful AI assistant for general questions and explanations",

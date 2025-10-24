@@ -18,9 +18,9 @@ pip install unisonai
 
 1. **Import Required Modules**
 ```python
-from unisonai import Single_Agent, Agent, Clan
+from unisonai import Agent, Clan
 from unisonai.llms import Gemini, OpenAI, Anthropic
-from unisonai.tools.websearch import WebSearchTool
+from unisonai.tools.memory import MemoryTool
 from unisonai import config
 ```
 
@@ -36,19 +36,19 @@ config.set_api_key('gemini', 'your-gemini-key')
 config.set_api_key('openai', 'your-openai-key')
 ```
 
-## Single Agent Usage
+## Agent Usage
 
 ### Creating a Basic Agent
 
 ```python
-from unisonai import Single_Agent
+from unisonai import Agent
 from unisonai.llms import Gemini
 
 # Initialize LLM
 llm = Gemini(model="gemini-2.0-flash", api_key="your-key")
 
 # Create agent
-agent = Single_Agent(
+agent = Agent(
     llm=llm,
     identity="Research Assistant",
     description="An AI assistant specialized in web research and analysis",
@@ -63,7 +63,7 @@ result = agent.unleash(task="Research the latest developments in quantum computi
 ### Agent with Tools
 
 ```python
-from unisonai.tools.websearch import WebSearchTool
+from unisonai.tools.memory import MemoryTool
 from unisonai.tools.tool import BaseTool, Field
 from unisonai.tools.types import ToolParameterType
 
@@ -89,15 +89,15 @@ class CalculatorTool(BaseTool):
             return f"Error: {str(e)}"
 
 # Create agent with tools
-agent = Single_Agent(
+agent = Agent(
     llm=Gemini(model="gemini-2.0-flash"),
     identity="Math Assistant",
-    description="Assistant for research and calculations",
-    tools=[WebSearchTool, CalculatorTool],
+    description="Assistant for calculations and memory",
+    tools=[MemoryTool, CalculatorTool],
     verbose=True
 )
 
-agent.unleash(task="Search for Apple's current stock price and calculate total value of 100 shares")
+agent.unleash(task="Calculate the square root of 144 and store it in memory")
 ```
 
 ## Multi-Agent Usage
@@ -106,14 +106,15 @@ agent.unleash(task="Search for Apple's current stock price and calculate total v
 
 ```python
 from unisonai import Agent, Clan
+from unisonai.tools.rag import RAGTool
 
 # Research Agent
 research_agent = Agent(
     llm=Gemini(model="gemini-2.0-flash"),
     identity="Research Specialist",
-    description="Expert in gathering and synthesizing information from web sources",
-    task="Conduct comprehensive web research on assigned topics",
-    tools=[WebSearchTool],
+    description="Expert in gathering and synthesizing information from knowledge base",
+    task="Conduct comprehensive research on assigned topics using stored documents",
+    tools=[RAGTool],
     verbose=True
 )
 
@@ -414,7 +415,7 @@ except Exception as e:
 Enable verbose logging for detailed execution information:
 
 ```python
-agent = Single_Agent(
+agent = Agent(
     llm=your_llm,
     identity="Debug Agent",
     description="Agent with detailed logging",
@@ -429,7 +430,6 @@ See the `examples/` folder for comprehensive usage examples:
 - **[basic_agent.py](./examples/basic_agent.py)**: Simple single agent example
 - **[tool_development.py](./examples/tool_development.py)**: Custom tool creation
 - **[clan_coordination.py](./examples/clan_coordination.py)**: Multi-agent coordination
-- **[mcp_integration.py](./examples/mcp_integration.py)**: MCP server integration
 
 ## Support
 
@@ -445,6 +445,6 @@ For additional help:
 After mastering these basics:
 
 1. Explore [Tool Development](./tools-guide.md) for custom tool creation
-2. Learn about [MCP Integration](./mcp-integration.md) for external service integration
-3. Study [Advanced Patterns](./advanced-patterns.md) for complex use cases
-4. Contribute to the framework by creating custom tools and integrations
+2. Study advanced patterns for complex use cases
+3. Contribute to the framework by creating custom tools and integrations
+

@@ -32,6 +32,7 @@ class Clan:
             open(self.output_file, "w", encoding="utf-8").close()
         formatted_members = """"""
         for member in self.members:
+            member.clan_connected = True  # Enable clan mode for all members
             member.history_folder = self.history_folder
             member.shared_instruction = self.shared_instruction
             member.user_task = self.goal

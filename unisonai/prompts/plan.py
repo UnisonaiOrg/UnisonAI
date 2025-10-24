@@ -59,35 +59,6 @@ PLAN_PROMPT = """
         </plan>
     </example_multi_agent>
     
-    <example_single_agent>
-        <members>Manager (CEO)</members>
-        <client_task>Summarize recent developments in quantum computing</client_task>
-        <plan>
-            <think>
-            SINGLE AGENT SCENARIO:
-            Only Manager available, so all tasks must be executed directly without delegation.
-            
-            TASK BREAKDOWN:
-            1. Research recent quantum computing developments (web search)
-            2. Analyze and organize findings by relevance and impact
-            3. Create structured summary with key points and implications
-            4. Deliver final summary to client
-
-            RATIONALE:
-            No delegation possible with single agent. Manager must execute all steps sequentially.
-            Focus on efficiency and direct execution while maintaining quality standards.
-            
-            EXPECTED OUTCOME:
-            Comprehensive yet concise summary covering latest quantum computing breakthroughs,
-            commercial applications, research milestones, and future implications.
-            </think>
-            <step>1: Manager researches recent quantum computing developments using available tools</step>
-            <step>2: Manager analyzes findings and identifies key trends and breakthroughs</step>
-            <step>3: Manager creates structured summary with insights and implications</step>
-            <step>4: Manager delivers final quantum computing summary to client</step>
-        </plan>
-    </example_single_agent>
-    
     <example_complex_multi_agent>
         <members>Manager (CEO), Technical_Researcher, Business_Analyst, UX_Designer, Developer</members>
         <client_task>Design and prototype a mobile app for fitness tracking with AI recommendations</client_task>

@@ -1,6 +1,5 @@
-from unisonai import Single_Agent
+from unisonai import Agent
 from unisonai.llms import Gemini
-from unisonai.tools.websearch import WebSearchTool
 from unisonai.tools.tool import BaseTool, Field
 from unisonai.tools.types import ToolParameterType
 from unisonai import config
@@ -87,14 +86,14 @@ class CalculatorTool(BaseTool):
         return operations[operation](number1, number2)
 
 # Create enhanced agent with multiple tools
-web_agent = Single_Agent(
+web_agent = Agent(
     llm=Gemini(model="gemini-2.0-flash"),
     identity="Enhanced Assistant",
-    description="Advanced assistant with web search, time, and calculation capabilities",
-    tools=[WebSearchTool, TimeTool, CalculatorTool],
+    description="Advanced assistant with time and calculation capabilities",
+    tools=[TimeTool, CalculatorTool],
     verbose=True,
     history_folder="history",
     # output_file="output.txt"
 )
 
-web_agent.unleash(task="What's the current time and can you search for the latest Apple stock price, then calculate what 1000 shares would cost?")
+web_agent.unleash(task="What's the current time and can you calculate what 1000 shares at $150 each would cost?")

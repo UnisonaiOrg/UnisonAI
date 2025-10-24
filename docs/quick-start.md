@@ -13,7 +13,7 @@ pip install unisonai
 ### Basic Agent
 
 ```python
-from unisonai import Single_Agent
+from unisonai import Agent
 from unisonai.llms import Gemini
 from unisonai import config
 
@@ -21,7 +21,7 @@ from unisonai import config
 config.set_api_key("gemini", "your-gemini-api-key")
 
 # Create and use an agent
-agent = Single_Agent(
+agent = Agent(
     llm=Gemini(model="gemini-2.0-flash"),
     identity="Assistant",
     description="A helpful AI assistant",
@@ -32,22 +32,23 @@ result = agent.unleash(task="Explain quantum computing in simple terms")
 print(result)
 ```
 
-### Agent with Web Search
+### Agent with Memory
 
 ```python
-from unisonai.tools.websearch import WebSearchTool
+from unisonai.tools.memory import MemoryTool
 
-# Create agent with web search capability
-agent = Single_Agent(
+# Create agent with memory capability
+agent = Agent(
     llm=Gemini(model="gemini-2.0-flash"),
     identity="Research Assistant",
-    description="AI assistant with web search capabilities",
-    tools=[WebSearchTool],
+    description="AI assistant with memory capabilities",
+    tools=[MemoryTool],
     verbose=True
 )
 
 # Ask it to research something
 agent.unleash(task="What are the latest developments in AI safety research?")
+```
 ```
 
 ## 2. Multi-Agent Setup (5 minutes)
@@ -142,7 +143,7 @@ print(f"10 + 5 = {result.result}")
 
 ```python
 # Create agent with your custom tool
-agent = Single_Agent(
+agent = Agent(
     llm=Gemini(model="gemini-2.0-flash"),
     identity="Math Assistant",
     description="Assistant for math problems and calculations",
@@ -154,41 +155,7 @@ agent = Single_Agent(
 agent.unleash(task="Calculate 15 * 7 + 3 - 12 / 4")
 ```
 
-## 4. MCP Integration (15 minutes)
-
-### Connect to External Services
-
-```python
-from unisonai.tools import MCPManager
-
-# Configure MCP servers
-mcp_config = {
-    "mcpServers": {
-        "time": {
-            "command": "uvx",
-            "args": ["mcp-server-time"]
-        }
-    }
-}
-
-# Initialize MCP tools
-mcp_manager = MCPManager()
-mcp_tools = mcp_manager.init_config(mcp_config)
-
-# Create agent with MCP tools
-agent = Single_Agent(
-    llm=Gemini(model="gemini-2.0-flash"),
-    identity="Connected Assistant",
-    description="AI assistant with external service connections",
-    tools=mcp_tools,
-    verbose=True
-)
-
-# Use external services through natural language
-agent.unleash(task="What time is it right now?")
-```
-
-## 5. Configuration Options
+## 4. Configuration Options
 
 ### API Keys (Multiple Options)
 
@@ -211,7 +178,7 @@ llm = Gemini(model="gemini-2.0-flash", api_key="your-key")
 
 ```python
 # Verbose logging for debugging
-agent = Single_Agent(
+agent = Agent(
     llm=your_llm,
     identity="Debug Assistant",
     verbose=True,  # See detailed execution logs
@@ -219,7 +186,7 @@ agent = Single_Agent(
 )
 
 # Production-ready agent
-agent = Single_Agent(
+agent = Agent(
     llm=your_llm,
     identity="Production Assistant",
     verbose=False,  # Minimal logging
@@ -233,7 +200,7 @@ agent = Single_Agent(
 
 ```python
 # Complete research assistant setup
-research_agent = Single_Agent(
+research_agent = Agent(
     llm=Gemini(model="gemini-2.0-flash"),
     identity="Research Expert",
     description="Comprehensive research and analysis assistant",
@@ -253,11 +220,11 @@ research_agent.unleash(task="""
 
 ```python
 # Automated task processor
-automation_agent = Single_Agent(
+automation_agent = Agent(
     llm=Gemini(model="gemini-2.0-flash"),
     identity="Task Automator",
     description="Automated task processing and execution",
-    tools=[WebSearchTool, CalculatorTool],
+    tools=[MemoryTool, CalculatorTool],
     verbose=False
 )
 
@@ -338,7 +305,7 @@ analysis_team.unleash()
 3. **Agent Not Responding**
    ```python
    # Enable verbose mode to see what's happening
-   agent = Single_Agent(
+   agent = Agent(
        llm=your_llm,
        identity="Debug Assistant",
        verbose=True  # This will show detailed logs
@@ -349,15 +316,14 @@ analysis_team.unleash()
 
 Now that you're up and running:
 
-1. **Explore Examples**: Check out `main.py`, `main2.py`, and `tool_example.py` in the project root
+1. **Explore Examples**: Check out examples in the `examples/` folder
 2. **Build Custom Tools**: See [Tool System Guide](./tools-guide.md)
-3. **Connect External Services**: Learn about [MCP Integration](./mcp-integration.md)
-4. **Advanced Patterns**: Study [Architecture Guide](./architecture.md)
+3. **Advanced Patterns**: Study [Architecture Guide](./architecture.md)
 
 ## Need Help?
 
 - **Documentation**: Full guides in the `docs/` folder
-- **Examples**: Practical examples in the project root
+- **Examples**: Practical examples in the `examples/` folder
 - **API Reference**: Complete API documentation in [API Reference](./api-reference.md)
 
 **Happy building with UnisonAI!** 🎉
