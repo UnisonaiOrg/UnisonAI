@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from typing import List, Dict
 import google.generativeai as genaii
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
-from unisonai.config import config
+from ..config import config
 
 load_dotenv()
 

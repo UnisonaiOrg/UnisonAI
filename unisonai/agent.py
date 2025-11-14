@@ -1,9 +1,9 @@
 import sys  # Added for exiting the process smoothly
-from unisonai.llms import Gemini
-from unisonai.prompts.agent import AGENT_PROMPT
-from unisonai.prompts.manager import MANAGER_PROMPT
-from unisonai.prompts.individual import INDIVIDUAL_PROMPT
-from unisonai.async_helper import run_async_from_sync, run_sync_in_executor
+from .llms import Gemini
+from .prompts.agent import AGENT_PROMPT
+from .prompts.manager import MANAGER_PROMPT
+from .prompts.individual import INDIVIDUAL_PROMPT
+from .async_helper import run_async_from_sync, run_sync_in_executor
 import inspect
 import re
 import colorama

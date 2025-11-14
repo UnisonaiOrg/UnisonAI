@@ -4,14 +4,16 @@ import os
 
 here = os.path.abspath(os.path.dirname(__file__))
 
+
+
+VERSION = '1.0'
+DESCRIPTION = "UnisonAI Multi-Agent Framework provides a flexible, light-weight experience and extensible environment for creating and coordinating multiple AI agents."
+
 try:
     with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
         long_description = "\n" + fh.read()
 except FileNotFoundError:
     long_description = DESCRIPTION
-
-VERSION = '0.3'
-DESCRIPTION = "UnisonAI Multi-Agent Framework provides a flexible, light-weight experience and extensible environment for creating and coordinating multiple AI agents."
 
 # Setting up
 setup(
@@ -23,7 +25,7 @@ setup(
     long_description_content_type="text/markdown",
     long_description=long_description,
     packages=find_packages(),
-    install_requires=['cohere', 'groq', 'rich', 'python-dotenv', 'google-generativeai', 'requests', 'colorama', 'anthropic', "openai>=1.13.3", 'mistralai', "pydantic>=2.4.2", "nest_asyncio"],
+    install_requires=['cohere', 'groq', 'rich', 'python-dotenv', 'google-generativeai', 'requests', 'colorama', 'anthropic', "openai>=1.13.3", 'mistralai', "pydantic>=2.4.2", "nest_asyncio", "cerebras"],
     keywords=['agents', 'unisonai', 'unisonAI', 'multi-agent', 'clan', 'python', 'light-weight', 'agent-framework', 'framework', 'ai', 'ai tools', 'ai agents', 'llms', 'open-source', 'a2a', 'agent to agent'],
     classifiers=[
         "Development Status :: 4 - Beta",

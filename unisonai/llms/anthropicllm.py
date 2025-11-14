@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from rich import print
 from typing import Type, Optional, List, Dict
-from unisonai.config import config
+from ..config import config
 
 load_dotenv()
 

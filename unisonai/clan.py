@@ -1,6 +1,6 @@
 from typing import Any
-from unisonai.prompts.plan import PLAN_PROMPT
-from unisonai.agent import Agent
+from .prompts.plan import PLAN_PROMPT
+from .agent import Agent
 import re
 import os
 import colorama

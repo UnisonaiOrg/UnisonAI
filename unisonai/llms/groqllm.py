@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from groq import Groq
 import os
-from unisonai.config import config
+from ..config import config
 
 load_dotenv()
 

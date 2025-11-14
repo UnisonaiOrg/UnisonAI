@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from rich import print
 from typing import Optional, List, Dict
 import requests
-from unisonai.config import config
+from ..config import config
 
 load_dotenv()
 
