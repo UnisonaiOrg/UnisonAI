@@ -12,6 +12,8 @@ from typing import Any
 import json
 import difflib  # For fuzzy string matching
 import os  # For directory operations
+import hashlib  # For cache keys
+from datetime import datetime, timedelta
 colorama.init(autoreset=True)
 
 
@@ -43,7 +45,9 @@ class Agent:
                  verbose: bool = True,
                  tools: list[Any] = [],
                  output_file: str = None,  # For single agent mode
-                 history_folder: str = None):  # For both modes, defaults to "." for clan, "history" for single
+                 history_folder: str = None,  # For both modes, defaults to "." for clan, "history" for single
+                 enable_cache: bool = True,  # Enable result caching
+                 cache_ttl_minutes: int = 30):  # Cache time-to-live
         self.llm = llm
         self.identity = identity
         self.description = description
@@ -68,9 +72,51 @@ class Agent:
         self.clan_name = ""
         self.verbose = verbose
         
+        # Result caching
+        self.enable_cache = enable_cache
+        self.cache_ttl = timedelta(minutes=cache_ttl_minutes)
+        self._tool_cache = {}  # Format: {cache_key: (result, timestamp)}
+        
         # Create history folder for single agent mode
         if not self.clan_connected and self.history_folder != ".":
             os.makedirs(self.history_folder, exist_ok=True)
+    
+    def _get_cache_key(self, tool_name: str, params: dict) -> str:
+        """Generate unique cache key for tool+params combination."""
+        # Sort params for consistent hashing
+        param_str = json.dumps(params, sort_keys=True)
+        key_str = f"{tool_name}:{param_str}"
+        return hashlib.md5(key_str.encode()).hexdigest()
+    
+    def _get_cached_result(self, tool_name: str, params: dict) -> tuple[bool, Any]:
+        """Check cache for existing result.
+        
+        Returns:
+            (cache_hit: bool, result: Any)
+        """
+        if not self.enable_cache:
+            return False, None
+        
+        cache_key = self._get_cache_key(tool_name, params)
+        if cache_key in self._tool_cache:
+            result, timestamp = self._tool_cache[cache_key]
+            
+            # Check if cache is still valid
+            if datetime.now() - timestamp < self.cache_ttl:
+                return True, result
+            else:
+                # Expired, remove from cache
+                del self._tool_cache[cache_key]
+        
+        return False, None
+    
+    def _cache_result(self, tool_name: str, params: dict, result: Any) -> None:
+        """Store tool result in cache."""
+        if not self.enable_cache:
+            return
+        
+        cache_key = self._get_cache_key(tool_name, params)
+        self._tool_cache[cache_key] = (result, datetime.now())
 
     def _parse_and_fix_json(self, json_str: str):
         """Parses JSON string and attempts to fix common errors."""
@@ -80,7 +126,7 @@ class Agent:
         try:
             return json.loads(json_str)
         except json.JSONDecodeError as e:
-            print(f"{Fore.RED}JSON Error:{Style.RESET_ALL} {e}")
+            print(f"{Fore.RED}JSON parsing error: {e}{Style.RESET_ALL}")
             json_str = json_str.replace("'", '"')
             json_str = re.sub(r",\s*}", "}", json_str)
             json_str = re.sub(r"{\s*,", "{", json_str)
@@ -114,10 +160,14 @@ class Agent:
     def send_message(self, agent_name: str, message: str, additional_resource: str = None, sender: str = None):
         matched_agent_name = self._get_agent_by_name(agent_name)
         if matched_agent_name != agent_name and self.verbose:
-            print(
-                f"{Fore.YELLOW}📌 Note: Agent name '{agent_name}' was matched to '{matched_agent_name}'{Style.RESET_ALL}")
-        print(f"{Fore.LIGHTCYAN_EX}📨 Status: Sending message to {matched_agent_name}{Style.RESET_ALL}")
-        msg = f"""MESSAGE FROM: {sender}\nMESSAGE TO: {matched_agent_name}\n\n{message}\n\nADDITIONAL RESOURCE:\n{additional_resource}"""
+            print(f"{Fore.LIGHTYELLOW_EX}Note: '{agent_name}' matched to '{matched_agent_name}'{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTCYAN_EX}Sending message -> {Style.BRIGHT}{Fore.WHITE}{matched_agent_name}{Style.RESET_ALL}")
+        
+        # Optimized message format: compact without redundant headers (saves ~50 tokens per message)
+        msg = f"FROM: {sender} | {message}"
+        if additional_resource:
+            msg += f"\\nRESOURCE: {additional_resource}"
+        
         is_manager_message = matched_agent_name in [
             "CEO/Manager", "Manager", "CEO"]
         for member in self.rawmembers:
@@ -265,16 +315,22 @@ class Agent:
                     api_key=self.llm.client.api_key if hasattr(self.llm, 'client') and hasattr(self.llm.client, 'api_key') else None
                 )
                 
-        print(f"{Fore.LIGHTCYAN_EX}🔄 Status: Evaluating Task...{Style.RESET_ALL}\n")
+        print(f"\n{Fore.CYAN}{'═' * 70}{Style.RESET_ALL}")
+        print(f"{Fore.LIGHTCYAN_EX}Evaluating Task...{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{'═' * 70}{Style.RESET_ALL}\n")
+        
         response = self.llm.run(task, save_messages=True)
         try:
             with open(f"{folder}/{self.identity}.json", "w", encoding="utf-8") as f:
                 f.write(json.dumps(self.llm.messages, indent=4))
         except Exception as e:
-            print(e)
+            print(f"{Fore.RED}Error saving history: {e}{Style.RESET_ALL}")
+        
         if self.verbose:
-            print(f"{Fore.LIGHTWHITE_EX}Response:")
-            print(response)
+            print(f"{Fore.LIGHTBLACK_EX}{'─' * 70}{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTBLACK_EX}Model Response:{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTBLACK_EX}{response}{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTBLACK_EX}{'─' * 70}{Style.RESET_ALL}\n")
         
         # Extract JSON blocks from response
         json_blocks = re.findall(r"```json(.*?)```", response, flags=re.DOTALL)
@@ -285,101 +341,114 @@ class Agent:
         try:
             data = json.loads(json_content)
         except json.JSONDecodeError as e:
-            print(f"{Fore.RED}❌ Error parsing JSON: {e}{Style.RESET_ALL}")
+            print(f"\n{Fore.RED}{'═' * 70}{Style.RESET_ALL}")
+            print(f"{Fore.RED}JSON Parsing Error{Style.RESET_ALL}")
+            print(f"{Fore.RED}{'═' * 70}{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}Details: {e}{Style.RESET_ALL}\n")
             return response
 
-        # Handle new JSON structure: {"thoughts": {...}, "action": {"tool_name": "...", "parameters": {...}}, "verification": "..."}
-        if "thoughts" in data and "action" in data:
-            thoughts = data["thoughts"]
+        # Handle new JSON structure: {"reasoning": "...", "action": {"tool": "...", "params": {...}}}
+        if "reasoning" in data and "action" in data:
+            reasoning = data["reasoning"]
             action = data["action"]
-            verification = data.get("verification", "No verification specified")
             
             # Extract tool name and parameters from action
-            name = action.get("tool_name", "")
-            params = action.get("parameters", {})
+            name = action.get("tool", "")
+            params = action.get("params", {})
             
-            # Display thoughts information with colors
-            print(f"\n{Fore.CYAN}{'='*60}{Style.RESET_ALL}")
-            print(f"{Fore.MAGENTA}🧠 THOUGHTS:{Style.RESET_ALL}")
-            if isinstance(thoughts, dict):
-                if self.clan_connected:
-                    # Clan mode: show plan_step, evidence, validation, dependencies, failure_modes
-                    print(f"  {Fore.LIGHTBLUE_EX}📍 Plan Step: {thoughts.get('plan_step', 'N/A')}{Style.RESET_ALL}")
-                    print(f"  {Fore.LIGHTGREEN_EX}📊 Evidence: {thoughts.get('evidence', 'N/A')}{Style.RESET_ALL}")
-                    print(f"  {Fore.LIGHTMAGENTA_EX}✓ Validation: {thoughts.get('validation', 'N/A')}{Style.RESET_ALL}")
-                    print(f"  {Fore.LIGHTYELLOW_EX}🔗 Dependencies: {thoughts.get('dependencies', [])}{Style.RESET_ALL}")
-                    print(f"  {Fore.LIGHTRED_EX}⚠ Failure Modes: {thoughts.get('failure_modes', 'N/A')}{Style.RESET_ALL}")
-                else:
-                    # Single agent mode: show goal, context, evidence, validation, fallback
-                    print(f"  {Fore.LIGHTBLUE_EX}🎯 Goal: {thoughts.get('goal', 'N/A')}{Style.RESET_ALL}")
-                    print(f"  {Fore.LIGHTCYAN_EX}📋 Context: {thoughts.get('context', 'N/A')}{Style.RESET_ALL}")
-                    print(f"  {Fore.LIGHTGREEN_EX}📊 Evidence: {thoughts.get('evidence', 'N/A')}{Style.RESET_ALL}")
-                    print(f"  {Fore.LIGHTMAGENTA_EX}✓ Validation: {thoughts.get('validation', 'N/A')}{Style.RESET_ALL}")
-                    print(f"  {Fore.LIGHTYELLOW_EX}🔄 Fallback: {thoughts.get('fallback', 'N/A')}{Style.RESET_ALL}")
-            else:
-                thoughts_str = str(thoughts)
-                if len(thoughts_str) > 150:
-                    thoughts_str = f"{thoughts_str[:120]}..."
-                print(f"  {thoughts_str}")
+            # Display in a clean, professional format
+            print(f"\n{Fore.CYAN}{'═' * 70}{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}Agent: {Style.BRIGHT}{Fore.WHITE}{self.identity}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{'═' * 70}{Style.RESET_ALL}")
             
-            print(f"\n{Fore.GREEN}🛠 ACTION:{Style.RESET_ALL}")
-            print(f"  {Fore.LIGHTGREEN_EX}Tool: {name}{Style.RESET_ALL}")
-            print(f"  {Fore.LIGHTYELLOW_EX}Parameters: {json.dumps(params, indent=2)}{Style.RESET_ALL}")
+            # Display reasoning
+            print(f"\n{Fore.LIGHTYELLOW_EX}Reasoning:{Style.RESET_ALL}")
+            print(f"{Fore.WHITE}   {reasoning}{Style.RESET_ALL}")
             
-            print(f"\n{Fore.LIGHTCYAN_EX}✅ VERIFICATION:{Style.RESET_ALL}")
-            print(f"  {verification}")
-            print(f"{Fore.CYAN}{'='*60}{Style.RESET_ALL}\n")
+            # Display action
+            print(f"\n{Fore.LIGHTGREEN_EX}Action:{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTCYAN_EX}   └─ Tool:{Style.RESET_ALL} {Fore.WHITE}{Style.BRIGHT}{name}{Style.RESET_ALL}")
+            if params:
+                print(f"{Fore.LIGHTMAGENTA_EX}   └─ Parameters:{Style.RESET_ALL}")
+                for key, value in params.items():
+                    # Truncate long values
+                    str_value = str(value)
+                    if len(str_value) > 100:
+                        str_value = str_value[:97] + "..."
+                    print(f"{Fore.LIGHTBLACK_EX}      • {Fore.LIGHTWHITE_EX}{key}:{Style.RESET_ALL} {Fore.WHITE}{str_value}{Style.RESET_ALL}")
+            
+            print(f"\n{Fore.CYAN}{'═' * 70}{Style.RESET_ALL}\n")
             
             if name == "send_message":
                 if isinstance(params, dict) and "agent_name" in params and "message" in params:
                     self.send_message(params["agent_name"], params["message"], params.get(
                         "additional_resource"), sender=self.identity)
                 else:
-                    print(
-                        f"{Fore.RED}❌ Error: Missing required parameters for send_message tool. Need 'agent_name' and 'message'.{Style.RESET_ALL}")
-                    print(f"{Fore.RED}Available params: {params}{Style.RESET_ALL}")
+                    print(f"\n{Fore.RED}{'─' * 70}{Style.RESET_ALL}")
+                    print(f"{Fore.RED}Error: Missing required parameters{Style.RESET_ALL}")
+                    print(f"{Fore.LIGHTYELLOW_EX}   send_message requires: 'agent_name' and 'message'{Style.RESET_ALL}")
+                    print(f"{Fore.RED}{'─' * 70}{Style.RESET_ALL}\n")
             elif name == "ask_user":
                 if isinstance(params, dict) and "question" in params:
-                    print(f"{Fore.LIGHTYELLOW_EX}❓ QUESTION: {params['question']}{Style.RESET_ALL}")
-                    self.unleash(input("You: "))
+                    print(f"\n{Fore.YELLOW}{'─' * 70}{Style.RESET_ALL}")
+                    print(f"{Fore.LIGHTYELLOW_EX}Question:{Style.RESET_ALL}")
+                    print(f"{Fore.WHITE}   {params['question']}{Style.RESET_ALL}")
+                    print(f"{Fore.YELLOW}{'─' * 70}{Style.RESET_ALL}")
+                    self.unleash(input(f"{Fore.LIGHTCYAN_EX}You:{Style.RESET_ALL} "))
                 else:
-                    question = str(
-                        params) if params else "What would you like to say?"
-                    print(f"{Fore.LIGHTYELLOW_EX}❓ QUESTION: {question}{Style.RESET_ALL}")
-                    self.unleash(input("You: "))
+                    question = str(params) if params else "What would you like to say?"
+                    print(f"\n{Fore.YELLOW}{'─' * 70}{Style.RESET_ALL}")
+                    print(f"{Fore.LIGHTYELLOW_EX}Question:{Style.RESET_ALL}")
+                    print(f"{Fore.WHITE}   {question}{Style.RESET_ALL}")
+                    print(f"{Fore.YELLOW}{'─' * 70}{Style.RESET_ALL}")
+                    self.unleash(input(f"{Fore.LIGHTCYAN_EX}You:{Style.RESET_ALL} "))
             elif name == "pass_result":
-                if isinstance(params, dict) and "result" in params:
-                    print(f"{Fore.LIGHTGREEN_EX}✅ RESULT: {str(params['result'])}{Style.RESET_ALL}")
-                else:
-                    print(f"{Fore.LIGHTGREEN_EX}✅ RESULT: {str(params)}{Style.RESET_ALL}")
-                while True:
-                    decision = input(
-                        "Does this result meet your requirements? (y/n): ")
-                    if decision.lower() == "y":
-                        print("Result accepted. Ending process smoothly.")
-                        if self.output_file:
-                            with open(self.output_file, "w", encoding="utf-8") as file:
-                                file.write(
-                                    str(params["result"]) or str(params))
-                        sys.exit(0)
-                    elif decision.lower() == "n":
-                        tweaks = input("What tweaks would you like to make? ")
-                        self.unleash(tweaks)
-                        break
-                    else:
-                        print("Invalid input. Please enter 'y' or 'n'.")
+                result_text = params.get("result", str(params)) if isinstance(params, dict) else str(params)
+                print(f"\n{Fore.GREEN}{'═' * 70}{Style.RESET_ALL}")
+                print(f"{Fore.LIGHTGREEN_EX}{Style.BRIGHT}FINAL RESULT{Style.RESET_ALL}")
+                print(f"{Fore.GREEN}{'═' * 70}{Style.RESET_ALL}")
+                print(f"\n{Fore.LIGHTWHITE_EX}{result_text}{Style.RESET_ALL}\n")
+                print(f"{Fore.GREEN}{'═' * 70}{Style.RESET_ALL}\n")
+                
+                decision = input(f"{Fore.LIGHTCYAN_EX}Accept this result? (y/n):{Style.RESET_ALL} ")
+                if decision.lower() == "y":
+                    print(f"\n{Fore.GREEN}{'═' * 70}{Style.RESET_ALL}")
+                    print(f"{Fore.GREEN}{Style.BRIGHT}Result Accepted Successfully{Style.RESET_ALL}")
+                    print(f"{Fore.GREEN}{'═' * 70}{Style.RESET_ALL}\n")
+                    if self.output_file:
+                        with open(self.output_file, "w", encoding="utf-8") as file:
+                            file.write(result_text)
+                    sys.exit(0)
+                elif decision.lower() == "n":
+                    tweaks = input(f"{Fore.LIGHTWHITE_EX}What changes would you like?{Style.RESET_ALL} ")
+                    self.unleash(tweaks)
             else:
                 # Execute the tool by first ensuring we have an instance.
                 for tool in self.rawtools:
-                    tool_instance = tool if not isinstance(
-                        tool, type) else tool()
+                    tool_instance = tool if not isinstance(tool, type) else tool()
                     if tool_instance.name.lower() == name.lower():
+                        # Check cache first
+                        cache_hit, cached_result = self._get_cached_result(name, params)
+                        if cache_hit:
+                            print(f"\n{Fore.LIGHTMAGENTA_EX}{'─' * 70}{Style.RESET_ALL}")
+                            print(f"{Fore.LIGHTCYAN_EX}Cache Hit: {Style.BRIGHT}{Fore.WHITE}{name}{Style.RESET_ALL} (saved API call)")
+                            print(f"{Fore.LIGHTMAGENTA_EX}{'─' * 70}{Style.RESET_ALL}\n")
+                            print(f"{Fore.LIGHTMAGENTA_EX}{'─' * 70}{Style.RESET_ALL}")
+                            print(f"{Fore.LIGHTGREEN_EX}Tool Response:{Style.RESET_ALL}")
+                            print(f"{Fore.LIGHTMAGENTA_EX}{'─' * 70}{Style.RESET_ALL}")
+                            print(f"{Fore.WHITE}{cached_result}{Style.RESET_ALL}")
+                            print(f"{Fore.LIGHTMAGENTA_EX}{'─' * 70}{Style.RESET_ALL}\n")
+                            self.unleash("Tool response:\n\n" + str(cached_result))
+                            break
+                        
                         try:
                             # --- Primary execution path (bound method) ---
                             bound_run_method = tool_instance._run
                             is_async = inspect.iscoroutinefunction(bound_run_method)
                             
-                            print(f"{Fore.LIGHTCYAN_EX}⚙ Status: Executing Tool {name} {'(Async)' if is_async else '(Sync)'}...{Style.RESET_ALL}\n")
+                            print(f"\n{Fore.LIGHTMAGENTA_EX}{'─' * 70}{Style.RESET_ALL}")
+                            print(f"{Fore.LIGHTMAGENTA_EX}Executing Tool: {Style.BRIGHT}{Fore.WHITE}{name}{Style.RESET_ALL} ...{Style.RESET_ALL}")
+                            print(f"{Fore.LIGHTMAGENTA_EX}{'─' * 70}{Style.RESET_ALL}\n")
                             
                             if is_async:
                                 if isinstance(params, dict):
@@ -392,55 +461,68 @@ class Agent:
                                 else:
                                     tool_response = bound_run_method(params)
 
-                            print(f"{Fore.LIGHTGREEN_EX}📤 Tool Response:{Style.RESET_ALL}")
-                            print(tool_response)
-                            self.unleash(
-                                "Here is your tool response:\n\n" + str(tool_response))
+                            # Cache the result
+                            self._cache_result(name, params, tool_response)
+                            
+                            print(f"{Fore.LIGHTMAGENTA_EX}{'─' * 70}{Style.RESET_ALL}")
+                            print(f"{Fore.LIGHTGREEN_EX}Tool Response:{Style.RESET_ALL}")
+                            print(f"{Fore.LIGHTMAGENTA_EX}{'─' * 70}{Style.RESET_ALL}")
+                            print(f"{Fore.WHITE}{tool_response}{Style.RESET_ALL}")
+                            print(f"{Fore.LIGHTMAGENTA_EX}{'─' * 70}{Style.RESET_ALL}\n")
+                            self.unleash("Tool response:\n\n" + str(tool_response))
                             break
                         
                         except TypeError as e:
                             if ("missing 1 required positional argument: 'self'" in str(e) or
                                     "got multiple values for argument" in str(e) or
                                     "takes 0 positional arguments but 1 was given" in str(e)):
-                            # ---- END OF THE FIX ----
                             
                                 try:
                                     # --- Fallback execution path (unbound method) ---
                                     unbound_run_method = tool_instance.__class__._run
                                     is_async_unbound = inspect.iscoroutinefunction(unbound_run_method)
 
-                                    print(f"{Fore.LIGHTCYAN_EX}⚙ Status: Executing Tool (via unbound method) {'(Async)' if is_async_unbound else '(Sync via Executor)'}...{Style.RESET_ALL}\n")
+                                    print(f"\n{Fore.LIGHTYELLOW_EX}{'─' * 70}{Style.RESET_ALL}")
+                                    print(f"{Fore.LIGHTYELLOW_EX}Executing Tool (fallback): {Style.BRIGHT}{Fore.WHITE}{name}{Style.RESET_ALL} ...{Style.RESET_ALL}")
+                                    print(f"{Fore.LIGHTYELLOW_EX}{'─' * 70}{Style.RESET_ALL}\n")
 
                                     if is_async_unbound:
-                                        # Execute async unbound tool
                                         if isinstance(params, dict):
                                             tool_response = run_async_from_sync(unbound_run_method(**params))
                                         else:
                                             tool_response = run_async_from_sync(unbound_run_method(params))
                                     else: 
-                                        # Execute sync unbound tool in thread pool
                                         if isinstance(params, dict):
                                             tool_response = run_sync_in_executor(unbound_run_method, **params)
                                         else:
                                             tool_response = run_sync_in_executor(unbound_run_method, params)
                                     
-                                    print(f"{Fore.LIGHTGREEN_EX}📤 Tool Response:{Style.RESET_ALL}")
-                                    print(tool_response)
-                                    self.unleash(
-                                        "Here is your tool response:\n\n" + str(tool_response))
+                                    print(f"{Fore.LIGHTYELLOW_EX}{'─' * 70}{Style.RESET_ALL}")
+                                    print(f"{Fore.LIGHTGREEN_EX}Tool Response:{Style.RESET_ALL}")
+                                    print(f"{Fore.LIGHTYELLOW_EX}{'─' * 70}{Style.RESET_ALL}")
+                                    print(f"{Fore.WHITE}{tool_response}{Style.RESET_ALL}")
+                                    print(f"{Fore.LIGHTYELLOW_EX}{'─' * 70}{Style.RESET_ALL}\n")
+                                    self.unleash("Tool response:\n\n" + str(tool_response))
                                     break
                                 except Exception as inner_e:
-                                    print(
-                                        f"{Fore.RED}❌ Failed to execute tool via unbound method: {inner_e}{Style.RESET_ALL}")
+                                    print(f"\n{Fore.RED}{'─' * 70}{Style.RESET_ALL}")
+                                    print(f"{Fore.RED}Error executing tool '{name}'{Style.RESET_ALL}")
+                                    print(f"{Fore.LIGHTYELLOW_EX}   {inner_e}{Style.RESET_ALL}")
+                                    print(f"{Fore.RED}{'─' * 70}{Style.RESET_ALL}\n")
                             else:
-                                # It's a different TypeError, so report it as a primary error
-                                print(f"{Fore.RED}❌ Error executing tool '{name}': {e}{Style.RESET_ALL}")
+                                print(f"\n{Fore.RED}{'─' * 70}{Style.RESET_ALL}")
+                                print(f"{Fore.RED}Error executing tool '{name}'{Style.RESET_ALL}")
+                                print(f"{Fore.LIGHTYELLOW_EX}   {e}{Style.RESET_ALL}")
+                                print(f"{Fore.RED}{'─' * 70}{Style.RESET_ALL}\n")
 
                         except Exception as e:
-                            print(
-                                f"{Fore.RED}❌ Error executing tool '{name}': {e}{Style.RESET_ALL}")
+                            print(f"\n{Fore.RED}{'─' * 70}{Style.RESET_ALL}")
+                            print(f"{Fore.RED}Error executing tool '{name}'{Style.RESET_ALL}")
+                            print(f"{Fore.LIGHTYELLOW_EX}   {e}{Style.RESET_ALL}")
+                            print(f"{Fore.RED}{'─' * 70}{Style.RESET_ALL}\n")
         else:
-            print(
-                f"{Fore.RED}❌ JSON block found, but it doesn't match the expected format.{Style.RESET_ALL}")
-            print(f"{Fore.YELLOW}Expected format: {{'thoughts': {{}}, 'action': {{'tool_name': '...', 'parameters': {{}}}}, 'verification': '...'}}{Style.RESET_ALL}")
+            print(f"\n{Fore.RED}{'═' * 70}{Style.RESET_ALL}")
+            print(f"{Fore.RED}Invalid JSON Format{Style.RESET_ALL}")
+            print(f"{Fore.RED}{'═' * 70}{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTYELLOW_EX}Expected: {{'reasoning': '...', 'action': {{'tool': '...', 'params': {{}}}}}}{Style.RESET_ALL}\n")
             return response
