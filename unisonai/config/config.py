@@ -47,17 +47,53 @@ class Config:
         except Exception as e:
             print(f"Error saving config: {e}")
 
-    def set_api_key(self, provider: str, api_key: str):
-        """Set API key for a specific provider."""
-        if provider in self._config['api_keys']:
-            self._config['api_keys'][provider] = api_key
+    def set_api_key(self, model: str = None, provider: str = None, api_key: str = None):
+        """Set API key for a specific provider.
+        
+        Args:
+            model: Model/provider name (e.g., 'gemini', 'openai')
+            provider: Alias for model parameter (for backward compatibility)
+            api_key: The API key to set
+            
+        Examples:
+            config.set_api_key(model="gemini", api_key=os.getenv("GEMINI_API_KEY"))
+            config.set_api_key("gemini", api_key=os.getenv("GEMINI_API_KEY"))
+        """
+        # Support both model= and provider= parameters
+        provider_name = model or provider
+        
+        if provider_name is None:
+            raise ValueError("Either 'model' or 'provider' parameter must be specified")
+        
+        if api_key is None:
+            raise ValueError("api_key parameter is required")
+            
+        if provider_name in self._config['api_keys']:
+            self._config['api_keys'][provider_name] = api_key
             self._save_config()
         else:
-            raise ValueError(f"Unknown provider: {provider}")
+            raise ValueError(f"Unknown provider: {provider_name}. Available: {', '.join(self._config['api_keys'].keys())}")
 
-    def get_api_key(self, provider: str) -> str:
-        """Get API key for a specific provider."""
-        return self._config['api_keys'].get(provider)
+    def get_api_key(self, model: str = None, provider: str = None) -> str:
+        """Get API key for a specific provider.
+        
+        Args:
+            model: Model/provider name (e.g., 'gemini', 'openai')
+            provider: Alias for model parameter (for backward compatibility)
+            
+        Returns:
+            API key string or None if not set
+            
+        Examples:
+            key = config.get_api_key(model="gemini")
+            key = config.get_api_key("gemini")
+        """
+        provider_name = model or provider
+        
+        if provider_name is None:
+            raise ValueError("Either 'model' or 'provider' parameter must be specified")
+            
+        return self._config['api_keys'].get(provider_name)
 
     def get_all_api_keys(self) -> Dict[str, str]:
         """Get all API keys."""
